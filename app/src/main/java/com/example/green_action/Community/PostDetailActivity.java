@@ -23,7 +23,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
@@ -60,40 +59,19 @@ public class PostDetailActivity extends AppCompatActivity {
             loggedInUserId = currentUser.getUid();
         }
 
-        ImageButton buttonBack = findViewById(R.id.backButton);
-        buttonBack.setOnClickListener(v -> finish());
+        ImageButton buttonback = findViewById(R.id.backButton);
+        buttonback.setOnClickListener(v -> finish());
 
         firebaseClient = new FirebaseClient();
 
         // Intent로부터 데이터 가져오기
         postId = getIntent().getStringExtra("postId");
-        String boardType = getIntent().getStringExtra("boardType");
+        userId = getIntent().getStringExtra("userId");
+        title = getIntent().getStringExtra("title");
+        content = getIntent().getStringExtra("content");
+        timestamp = getIntent().getStringExtra("timestamp");
 
-        if (postId != null && boardType != null) {
-            DatabaseReference postRef = FirebaseDatabase.getInstance().getReference(boardType).child(postId);
-            postRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        userId = dataSnapshot.child("userId").getValue(String.class);
-                        title = dataSnapshot.child("title").getValue(String.class);
-                        content = dataSnapshot.child("content").getValue(String.class);
-                        timestamp = dataSnapshot.child("timestamp").getValue(String.class);
-
-                        displayPostDetails();  // 데이터 로드 후에만 세부사항 표시
-                    } else {
-                        Toast.makeText(PostDetailActivity.this, "게시글을 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(PostDetailActivity.this, "데이터베이스 오류: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            Toast.makeText(this, "게시글 ID를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
-        }
+        displayPostDetails();
 
         // 좋아요 버튼과 카운트 초기화
         likeButton = findViewById(R.id.like_button);
@@ -134,6 +112,22 @@ public class PostDetailActivity extends AppCompatActivity {
                 commentEditText.setText(""); // 댓글 입력 필드 초기화
             } else {
                 Toast.makeText(PostDetailActivity.this, "댓글 내용을 입력하세요.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        submitCommentButton.setOnClickListener(v -> {
+            if (isLoggedIn()) {
+                String commentText = commentEditText.getText().toString().trim();
+                if (!commentText.isEmpty()) {
+                    submitComment(commentText);
+                    commentEditText.setText(""); // 댓글 입력 필드 초기화
+                } else {
+                    Toast.makeText(PostDetailActivity.this, "댓글 내용을 입력하세요.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Intent intent = new Intent(PostDetailActivity.this, LoginActivity.class);
+                startActivity(intent);
+                Toast.makeText(PostDetailActivity.this, "로그인 후 댓글을 작성할 수 있습니다.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -179,8 +173,8 @@ public class PostDetailActivity extends AppCompatActivity {
         TextView timestampTextView = findViewById(R.id.detail_post_timestamp);
         TextView idTextView = findViewById(R.id.detail_post_username);
 
-        titleTextView.setText(title != null ? title : "제목 없음");
-        contentTextView.setText(content != null ? content : "내용 없음");
+        titleTextView.setText(title);
+        contentTextView.setText(content);
         timestampTextView.setText(convertTimestampToDate(timestamp));
 
         // userId를 기반으로 올바른 사용자 이름을 가져와 표시
@@ -188,11 +182,6 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private void retrieveAndDisplayUsername(String userId, TextView idTextView) {
-        if (userId == null) {
-            idTextView.setText("Unknown User (unknown)");
-            return;
-        }
-
         DatabaseReference userRef = firebaseClient.getUsersRef().child(userId);
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -369,15 +358,7 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private String convertTimestampToDate(String timestamp) {
-        if (timestamp == null || timestamp.isEmpty()) {
-            return "Unknown Date";  // 또는 적절한 기본값을 반환
-        }
-        long time;
-        try {
-            time = Long.parseLong(timestamp);
-        } catch (NumberFormatException e) {
-            return "Invalid Date";  // 또는 오류 메시지를 반환
-        }
+        long time = Long.parseLong(timestamp);
         Date date = new Date(time);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return sdf.format(date);
