@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "quiz_database";
-    private static final int DATABASE_VERSION = 2; // 데이터베이스 버전 증가
+    private static final int DATABASE_VERSION = 3; // 데이터베이스 버전 증가
 
     public DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -105,8 +105,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // 테이블을 업데이트할 때 기존 테이블 삭제
-        if (oldVersion < 2) {
+        if (oldVersion < 3) {
+            // 새로 추가된 `quiz_progress` 테이블만 삭제할 경우
             db.execSQL("DROP TABLE IF EXISTS quiz_progress");
+            // 다른 테이블도 삭제할 경우 필요에 따라 추가
         }
         db.execSQL("DROP TABLE IF EXISTS user_table");
         db.execSQL("DROP TABLE IF EXISTS air_pollution_quiz");

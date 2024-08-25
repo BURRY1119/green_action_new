@@ -6,17 +6,19 @@ public class Comment {
     private String username;     // 사용자의 이름
     private String commentText;
     private long timestamp;
+    private String boardType;    // 추가: 게시판 유형
 
     // 기본 생성자
     public Comment() {}
 
     // 생성자
-    public Comment(String commentId, String userId, String username, String commentText, long timestamp) {
+    public Comment(String commentId, String userId, String username, String commentText, long timestamp, String boardType) {
         this.commentId = commentId;
         this.userId = userId;
         this.username = username;
         this.commentText = commentText;
         this.timestamp = timestamp;
+        this.boardType = boardType; // 게시판 유형 초기화
     }
 
     // Getter and Setter 메서드
@@ -58,5 +60,13 @@ public class Comment {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getBoardType() {
+        return boardType;
+    }
+
+    public void setBoardType(String boardType) {
+        this.boardType = boardType;
     }
 }

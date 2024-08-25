@@ -91,6 +91,12 @@ public class AirQuizSectionFragment extends Fragment {
             case 2: return "정답2";
             case 3: return "정답3";
             case 4: return "정답4";
+            case 5: return "정답5";
+            case 6: return "정답6";
+            case 7: return "정답7";
+            case 8: return "정답8";
+            case 9: return "정답9";
+            case 10: return "정답10";
             case 30: return "정답30";
             default: return "";
         }

@@ -4,11 +4,11 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.green_action.User;
 import com.example.green_action.Ranking;
 import com.example.green_action.DailyQuiz;
 import com.example.green_action.Post;
 import com.example.green_action.Comment;
-import com.example.green_action.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,7 +20,6 @@ public class FirebaseClient {
     private final FirebaseDatabase database;
     private final DatabaseReference dbRef;
     private final DatabaseReference usersRef;
-    private final DatabaseReference postsRef;
     private final DatabaseReference dailyQuizRef;
 
     private static final String TAG = "FirebaseClient";
@@ -29,8 +28,23 @@ public class FirebaseClient {
         database = FirebaseDatabase.getInstance();
         dbRef = database.getReference();
         usersRef = dbRef.child("users");
-        postsRef = dbRef.child("posts");
         dailyQuizRef = dbRef.child("daily_quiz");
+    }
+
+    // boardType에 따른 게시글 참조 가져오기
+    public DatabaseReference getPostsRef(String boardType) {
+        switch (boardType) {
+            case "issue":
+                return dbRef.child("issue_posts");
+            case "free":
+                return dbRef.child("free_posts");
+            case "notice":
+                return dbRef.child("notice_posts");
+            case "qna":
+                return dbRef.child("qna_posts");
+            default:
+                throw new IllegalArgumentException("Invalid board type: " + boardType);
+        }
     }
 
     // 사용자 데이터를 Firebase에 저장하는 메서드
@@ -45,34 +59,18 @@ public class FirebaseClient {
             });
         }
     }
+
+    // 사용자 데이터를 불러오는 메서드
     public void loadUserData(String userId, ValueEventListener listener) {
         if (userId != null && !userId.isEmpty()) {
             Log.d(TAG, "Loading user data for userId: " + userId);
             DatabaseReference userRef = usersRef.child(userId);
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        listener.onDataChange(dataSnapshot);
-                    } else {
-                        Log.e(TAG, "User data not found for userId: " + userId);
-                        // Default to unknown user if not found
-                        listener.onDataChange(null);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.e(TAG, "Error loading user data: " + databaseError.getMessage());
-                    listener.onCancelled(databaseError);
-                }
-            });
+            userRef.addListenerForSingleValueEvent(listener);
         } else {
             Log.e(TAG, "User ID is null or empty");
             listener.onDataChange(null);
         }
     }
-
 
     // 아이디 중복 확인 함수 (Firebase에서 체크)
     public void isIDExists(String id, final OnCheckUserExistsListener listener) {
@@ -89,14 +87,15 @@ public class FirebaseClient {
         });
     }
 
-    // 게시글 참조 가져오기
-    public DatabaseReference getPostsRef() {
-        return postsRef;
+    // 퀴즈 진행 상태 전체를 Firebase에서 불러오는 메서드
+    public void loadAllQuizProgress(String userId, ValueEventListener listener) {
+        DatabaseReference quizProgressRef = dbRef.child("users").child(userId).child("quiz_progress");
+        quizProgressRef.addListenerForSingleValueEvent(listener);
     }
 
     // 게시글을 저장하는 메서드
-    public void savePostData(String postId, Post post) {
-        postsRef.child(postId).setValue(post).addOnCompleteListener(task -> {
+    public void savePostData(String boardType, String postId, Post post) {
+        getPostsRef(boardType).child(postId).setValue(post).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.d(TAG, "Post data saved successfully.");
             } else {
@@ -104,23 +103,25 @@ public class FirebaseClient {
             }
         });
     }
+
     // 사용자 데이터 참조 반환 메서드
     public DatabaseReference getUsersRef() {
         return usersRef;
     }
+
     // 게시글 데이터를 Firebase에서 불러오는 메서드
-    public void loadPostData(String postId, ValueEventListener listener) {
-        postsRef.child(postId).addListenerForSingleValueEvent(listener);
+    public void loadPostData(String boardType, String postId, ValueEventListener listener) {
+        getPostsRef(boardType).child(postId).addListenerForSingleValueEvent(listener);
     }
 
     // 댓글 참조 가져오기
-    public DatabaseReference getCommentsRef(String postId) {
-        return postsRef.child(postId).child("comments");
+    public DatabaseReference getCommentsRef(String boardType, String postId) {
+        return getPostsRef(boardType).child(postId).child("comments");
     }
 
     // 댓글을 저장하는 메서드
-    public void saveCommentData(String commentId, Comment comment) {
-        dbRef.child("comments").child(commentId).setValue(comment).addOnCompleteListener(task -> {
+    public void saveCommentData(String boardType, String postId, String commentId, Comment comment) {
+        getCommentsRef(boardType, postId).child(commentId).setValue(comment).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.d(TAG, "Comment data saved successfully.");
             } else {
@@ -130,8 +131,8 @@ public class FirebaseClient {
     }
 
     // 댓글 데이터를 Firebase에서 불러오는 메서드
-    public void loadCommentData(String commentId, ValueEventListener listener) {
-        dbRef.child("comments").child(commentId).addListenerForSingleValueEvent(listener);
+    public void loadCommentData(String boardType, String postId, String commentId, ValueEventListener listener) {
+        getCommentsRef(boardType, postId).child(commentId).addListenerForSingleValueEvent(listener);
     }
 
     // 랭킹 데이터를 저장하는 메서드
@@ -176,11 +177,6 @@ public class FirebaseClient {
                         Log.e(TAG, "Failed to save quiz progress", task.getException());
                     }
                 });
-    }
-
-    // 퀴즈 진행 상태 전체를 Firebase에서 불러오는 메서드
-    public void loadAllQuizProgress(String userId, ValueEventListener listener) {
-        dbRef.child("users").child(userId).child("quiz_progress").addListenerForSingleValueEvent(listener);
     }
 
     // 인터페이스: 아이디 중복 확인 결과를 위한 콜백

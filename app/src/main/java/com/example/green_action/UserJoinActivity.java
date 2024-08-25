@@ -175,11 +175,12 @@ public class UserJoinActivity extends AppCompatActivity {
         firebaseClient.isIDExists(id, isAvailable -> {
             if (isAvailable) {
                 Toast.makeText(UserJoinActivity.this, "아이디가 이미 존재합니다.", Toast.LENGTH_SHORT).show();
+                isUsernameAvailable = false; // 중복된 경우 false로 설정
             } else {
                 Toast.makeText(UserJoinActivity.this, "사용 가능한 아이디입니다.", Toast.LENGTH_SHORT).show();
+                isUsernameAvailable = true; // 사용 가능한 경우 true로 설정
             }
         });
-
     }
 
     private boolean validateInput() {

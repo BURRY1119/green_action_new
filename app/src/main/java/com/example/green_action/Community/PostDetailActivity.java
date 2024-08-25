@@ -36,8 +36,7 @@ import java.util.Locale;
 public class PostDetailActivity extends AppCompatActivity {
 
     private FirebaseClient firebaseClient;
-    private String postId, userId, title, content, timestamp;
-
+    private String postId, userId, title, content, timestamp, boardType;
     private RecyclerView commentRecyclerView;
     private CommentAdapter commentAdapter;
     private List<Comment> commentList;
@@ -46,7 +45,6 @@ public class PostDetailActivity extends AppCompatActivity {
     private boolean liked = false;
     private FirebaseAuth firebaseAuth;
     private String loggedInUserId;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,13 +68,21 @@ public class PostDetailActivity extends AppCompatActivity {
         title = getIntent().getStringExtra("title");
         content = getIntent().getStringExtra("content");
         timestamp = getIntent().getStringExtra("timestamp");
+        boardType = getIntent().getStringExtra("boardType"); // boardType 추가
+
+        // boardType 확인
+        if (boardType == null || boardType.isEmpty()) {
+            Toast.makeText(this, "게시판 유형을 확인할 수 없습니다.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         displayPostDetails();
 
         // 좋아요 버튼과 카운트 초기화
         likeButton = findViewById(R.id.like_button);
         likeCountTextView = findViewById(R.id.like_count_text_view);
-        checkIfUserLikedPost();  // 사용자가 이미 좋아요를 눌렀는지 확인
+        checkIfUserLikedPost();
 
         likeButton.setOnClickListener(v -> {
             if (isLoggedIn()) {
@@ -96,7 +102,8 @@ public class PostDetailActivity extends AppCompatActivity {
         commentRecyclerView = findViewById(R.id.comment_recycler_view);
         commentRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         commentList = new ArrayList<>();
-        commentAdapter = new CommentAdapter(commentList, this, postId);
+        // 네 번째 매개변수로 boardType을 추가로 전달합니다.
+        commentAdapter = new CommentAdapter(commentList, this, postId, boardType);
         commentRecyclerView.setAdapter(commentAdapter);
 
         // 댓글 데이터 불러오기
@@ -141,8 +148,11 @@ public class PostDetailActivity extends AppCompatActivity {
                     if (isPostOwner()) {
                         Intent intent = new Intent(PostDetailActivity.this, EditPostActivity.class);
                         intent.putExtra("postId", postId);
+                        intent.putExtra("userId", userId);
                         intent.putExtra("title", title);
                         intent.putExtra("content", content);
+                        intent.putExtra("timestamp", timestamp);
+                        intent.putExtra("boardType", boardType);
                         startActivity(intent);
                     } else {
                         Toast.makeText(PostDetailActivity.this, "수정 권한이 없습니다.", Toast.LENGTH_SHORT).show();
@@ -177,13 +187,11 @@ public class PostDetailActivity extends AppCompatActivity {
         contentTextView.setText(content);
         timestampTextView.setText(convertTimestampToDate(timestamp));
 
-        // userId를 기반으로 올바른 사용자 이름을 가져와 표시
         retrieveAndDisplayUsername(userId, idTextView);
     }
 
     private void retrieveAndDisplayUsername(String userId, TextView idTextView) {
         DatabaseReference userRef = firebaseClient.getUsersRef().child(userId);
-
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -191,15 +199,10 @@ public class PostDetailActivity extends AppCompatActivity {
                     String username = snapshot.child("name").getValue(String.class);
                     if (username == null || username.isEmpty()) {
                         username = "Unknown User";
-                        Log.e("retrieveUsername", "Username is null or empty for userId: " + userId);
-                    } else {
-                        Log.d("retrieveUsername", "Username found: " + username);
                     }
-                    // 사용자 이름과 UID의 앞 7자리를 함께 표시
                     String displayId = userId.substring(0, Math.min(userId.length(), 7));
                     idTextView.setText(username + " (" + displayId + ")");
                 } else {
-                    Log.e("retrieveUsername", "No user data found for userId: " + userId);
                     String displayId = userId.substring(0, Math.min(userId.length(), 7));
                     idTextView.setText("Unknown User (" + displayId + ")");
                 }
@@ -207,7 +210,6 @@ public class PostDetailActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("retrieveUsername", "Database error: " + error.getMessage());
                 String displayId = userId.substring(0, Math.min(userId.length(), 7));
                 idTextView.setText("Unknown User (" + displayId + ")");
                 Toast.makeText(PostDetailActivity.this, "사용자 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
@@ -216,13 +218,13 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private void checkIfUserLikedPost() {
-        DatabaseReference userLikeRef = firebaseClient.getPostsRef().child(postId).child("userLikes").child(getUserId());
+        DatabaseReference userLikeRef = firebaseClient.getPostsRef(boardType).child(postId).child("userLikes").child(getUserId());
         userLikeRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                liked = snapshot.exists();  // 사용자가 이미 좋아요를 눌렀는지 확인
-                updateLikeButtonState();  // 버튼 상태 업데이트
-                loadLikeCount();  // 좋아요 수 업데이트
+                liked = snapshot.exists();
+                updateLikeButtonState();
+                loadLikeCount();
             }
 
             @Override
@@ -233,7 +235,7 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private void loadLikeCount() {
-        DatabaseReference likesRef = firebaseClient.getPostsRef().child(postId).child("likes");
+        DatabaseReference likesRef = firebaseClient.getPostsRef(boardType).child(postId).child("likes");
         likesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -241,7 +243,7 @@ public class PostDetailActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     likeCount = snapshot.getValue(Integer.class);
                 }
-                likeCountTextView.setText(String.valueOf(likeCount));  // 정수를 문자열로 변환하여 설정
+                likeCountTextView.setText(String.valueOf(likeCount));
             }
 
             @Override
@@ -252,7 +254,7 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private void incrementLikeCount() {
-        DatabaseReference postRef = firebaseClient.getPostsRef().child(postId);
+        DatabaseReference postRef = firebaseClient.getPostsRef(boardType).child(postId);
         postRef.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
@@ -262,7 +264,7 @@ public class PostDetailActivity extends AppCompatActivity {
                 } else {
                     currentData.child("likes").setValue(currentValue + 1);
                 }
-                currentData.child("userLikes").child(getUserId()).setValue(true);  // 사용자가 좋아요를 눌렀음을 기록
+                currentData.child("userLikes").child(getUserId()).setValue(true);
                 liked = true;
                 return Transaction.success(currentData);
             }
@@ -272,14 +274,14 @@ public class PostDetailActivity extends AppCompatActivity {
                 if (error != null) {
                     Toast.makeText(PostDetailActivity.this, "좋아요 증가 실패", Toast.LENGTH_SHORT).show();
                 } else {
-                    updateLikeButtonState();  // 버튼 상태 업데이트
+                    updateLikeButtonState();
                 }
             }
         });
     }
 
     private void decrementLikeCount() {
-        DatabaseReference postRef = firebaseClient.getPostsRef().child(postId);
+        DatabaseReference postRef = firebaseClient.getPostsRef(boardType).child(postId);
         postRef.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
@@ -287,7 +289,7 @@ public class PostDetailActivity extends AppCompatActivity {
                 if (currentValue != null && currentValue > 0) {
                     currentData.child("likes").setValue(currentValue - 1);
                 }
-                currentData.child("userLikes").child(getUserId()).setValue(null);  // 사용자가 좋아요를 취소했음을 기록
+                currentData.child("userLikes").child(getUserId()).setValue(null);
                 liked = false;
                 return Transaction.success(currentData);
             }
@@ -297,7 +299,7 @@ public class PostDetailActivity extends AppCompatActivity {
                 if (error != null) {
                     Toast.makeText(PostDetailActivity.this, "좋아요 감소 실패", Toast.LENGTH_SHORT).show();
                 } else {
-                    updateLikeButtonState();  // 버튼 상태 업데이트
+                    updateLikeButtonState();
                 }
             }
         });
@@ -305,16 +307,16 @@ public class PostDetailActivity extends AppCompatActivity {
 
     private void updateLikeButtonState() {
         if (liked) {
-            likeButton.setBackgroundResource(R.drawable.pinkheart);  // 기본 상태의 이미지 리소스를 그대로 사용
-            likeButton.setAlpha(0.5f);  // 투명도를 변경하여 눌린 상태를 시각적으로 표시
+            likeButton.setBackgroundResource(R.drawable.pinkheart);
+            likeButton.setAlpha(0.5f);
         } else {
-            likeButton.setBackgroundResource(R.drawable.pinkheart);  // 기본 상태로 복구
-            likeButton.setAlpha(1.0f);  // 투명도를 원래대로 돌림
+            likeButton.setBackgroundResource(R.drawable.pinkheart);
+            likeButton.setAlpha(1.0f);
         }
     }
 
     private void loadComments() {
-        DatabaseReference commentsRef = firebaseClient.getCommentsRef(postId);
+        DatabaseReference commentsRef = firebaseClient.getPostsRef(boardType).child(postId).child("comments");
         commentsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -334,11 +336,12 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private void submitComment(String commentText) {
-        DatabaseReference commentsRef = firebaseClient.getCommentsRef(postId).push();
+        DatabaseReference commentsRef = firebaseClient.getPostsRef(boardType).child(postId).child("comments").push();
         String commentId = commentsRef.getKey();
         String currentUserId = getUserId();
         String username = getLoggedInUsername();
-        Comment comment = new Comment(commentId, currentUserId, username, commentText, System.currentTimeMillis());
+        // Comment 생성 시 boardType을 포함하여 초기화합니다.
+        Comment comment = new Comment(commentId, currentUserId, username, commentText, System.currentTimeMillis(), boardType);
         commentsRef.setValue(comment);
     }
 
@@ -347,7 +350,7 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private void deletePost() {
-        firebaseClient.getPostsRef().child(postId).removeValue()
+        firebaseClient.getPostsRef(boardType).child(postId).removeValue()
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(PostDetailActivity.this, "게시물이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
                     finish();
@@ -376,7 +379,6 @@ public class PostDetailActivity extends AppCompatActivity {
     private String getLoggedInUsername() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            // Firebase 사용자의 경우 이름과 UID 앞 7자를 반환
             return currentUser.getDisplayName() + " (" + currentUser.getUid().substring(0, 7) + ")";
         } else {
             return "Unknown User (unknown)";

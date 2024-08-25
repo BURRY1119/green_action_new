@@ -3,7 +3,6 @@ package com.example.green_action.Community;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -37,7 +36,7 @@ public class FreeBoardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_free_board); // 자유 게시판에 해당하는 레이아웃
+        setContentView(R.layout.activity_free_board);
 
         ImageButton buttonback = findViewById(R.id.backButton);
         buttonback.setOnClickListener(v -> finish());
@@ -56,14 +55,14 @@ public class FreeBoardActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.community_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new CommunityPostAdapter(postItemList, this, loggedInUserId);
+        adapter = new CommunityPostAdapter(postItemList, this, loggedInUserId, "free");
         recyclerView.setAdapter(adapter);
 
         Button writePostButton = findViewById(R.id.write_post_button);
         writePostButton.setOnClickListener(v -> {
             if (isLoggedIn()) {
                 Intent intent = new Intent(FreeBoardActivity.this, WritePostActivity.class);
-                intent.putExtra("boardType", "free"); // 자유 게시판 유형 전달
+                intent.putExtra("boardType", "free");
                 startActivity(intent);
             } else {
                 Intent intent = new Intent(FreeBoardActivity.this, LoginActivity.class);

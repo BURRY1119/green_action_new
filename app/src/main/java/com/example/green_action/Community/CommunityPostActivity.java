@@ -61,7 +61,9 @@ public abstract class CommunityPostActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.community_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new CommunityPostAdapter(postItemList, this, loggedInUserId);
+
+        // adapter 생성 시 네 번째 매개변수로 boardType 전달
+        adapter = new CommunityPostAdapter(postItemList, this, loggedInUserId, getBoardType());
         recyclerView.setAdapter(adapter);
 
         Button writePostButton = findViewById(R.id.write_post_button);
@@ -102,6 +104,7 @@ public abstract class CommunityPostActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // 로드 실패 시 처리
+                Toast.makeText(CommunityPostActivity.this, "게시물을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
             }
         });
     }

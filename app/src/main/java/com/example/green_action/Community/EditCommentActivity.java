@@ -14,7 +14,7 @@ import com.example.green_action.remote.FirebaseClient;
 
 public class EditCommentActivity extends AppCompatActivity {
     private FirebaseClient firebaseClient;
-    private String commentId, postId;
+    private String commentId, postId, boardType; // boardType 추가
     private EditText editComment;
 
     @Override
@@ -34,6 +34,7 @@ public class EditCommentActivity extends AppCompatActivity {
         Intent intent = getIntent();
         commentId = intent.getStringExtra("commentId");
         postId = intent.getStringExtra("postId");
+        boardType = intent.getStringExtra("boardType"); // boardType 추가로 가져오기
         String commentText = intent.getStringExtra("commentText");
 
         editComment.setText(commentText);
@@ -42,7 +43,8 @@ public class EditCommentActivity extends AppCompatActivity {
             String newCommentText = editComment.getText().toString().trim();
 
             if (!newCommentText.isEmpty()) {
-                firebaseClient.getCommentsRef(postId).child(commentId).child("commentText").setValue(newCommentText)
+                // boardType과 postId를 모두 전달
+                firebaseClient.getCommentsRef(boardType, postId).child(commentId).child("commentText").setValue(newCommentText)
                         .addOnSuccessListener(aVoid -> {
                             Toast.makeText(EditCommentActivity.this, "댓글이 수정되었습니다.", Toast.LENGTH_SHORT).show();
                             finish();
@@ -56,7 +58,8 @@ public class EditCommentActivity extends AppCompatActivity {
         });
 
         deleteButton.setOnClickListener(v -> {
-            firebaseClient.getCommentsRef(postId).child(commentId).removeValue()
+            // boardType과 postId를 모두 전달
+            firebaseClient.getCommentsRef(boardType, postId).child(commentId).removeValue()
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(EditCommentActivity.this, "댓글이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
                         finish();

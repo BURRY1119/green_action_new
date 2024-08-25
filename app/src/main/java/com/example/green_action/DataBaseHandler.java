@@ -91,20 +91,31 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     public boolean getQuizStatus(int quizId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT " + COLUMN_QUIZ_STATUS + " FROM " + TABLE_QUIZ_PROGRESS + " WHERE " + COLUMN_QUIZ_ID + "=?";
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(quizId)});
+        Cursor cursor = null;
         boolean status = false;
-        if (cursor.moveToFirst()) {
-            int columnIndex = cursor.getColumnIndex(COLUMN_QUIZ_STATUS);
-            if (columnIndex != -1) {
-                int statusValue = cursor.getInt(columnIndex);
-                status = statusValue == 1;
+
+        try {
+            cursor = db.rawQuery(query, new String[]{String.valueOf(quizId)});
+            if (cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndex(COLUMN_QUIZ_STATUS);
+                if (columnIndex != -1) {
+                    int statusValue = cursor.getInt(columnIndex);
+                    status = statusValue == 1;
+                } else {
+                    Log.e("DatabaseError", "Column '" + COLUMN_QUIZ_STATUS + "' not found");
+                }
             } else {
-                Log.e("DatabaseError", "Column '" + COLUMN_QUIZ_STATUS + "' not found");
+                Log.e("DatabaseError", "No quiz progress found for quizId: " + quizId);
             }
-        } else {
-            Log.e("DatabaseError", "No quiz progress found for quizId: " + quizId);
+        } catch (Exception e) {
+            Log.e("DatabaseError", "Error retrieving quiz status for quizId: " + quizId, e);
+        } finally {
+            if (cursor != null) {
+                cursor.close(); // Cursor를 닫습니다.
+            }
+            db.close(); // 데이터베이스 연결을 닫습니다.
         }
-        cursor.close();
+
         return status;
     }
 
@@ -131,9 +142,18 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     public void deletePost(String postId, String boardType) {
         DatabaseReference postsRef = getPostsReference(boardType);
         if (postsRef != null) {
-            postsRef.child(postId).removeValue();
+            postsRef.child(postId).removeValue()
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("DataBaseHandler", "게시물이 성공적으로 삭제되었습니다: " + postId);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("DataBaseHandler", "게시물 삭제 실패: " + postId, e);
+                    });
+        } else {
+            Log.e("DataBaseHandler", "잘못된 게시판 유형: " + boardType);
         }
     }
+
 
     // 특정 유형의 게시물 가져오기 함수
     public void getPostsByType(String boardType, final OnPostsRetrievedListener listener) {
@@ -227,5 +247,34 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     // 인터페이스: 중복 체크 결과를 위한 콜백
     public interface OnCheckUserExistsListener {
         void onCheck(boolean exists);
+    }
+
+    // 마지막으로 푼 퀴즈 번호 가져오기
+    public int getLastSolvedQuiz() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT MAX(" + COLUMN_QUIZ_ID + ") FROM " + TABLE_QUIZ_PROGRESS + " WHERE " + COLUMN_QUIZ_STATUS + "=1";
+        Cursor cursor = null;
+        int lastSolvedQuiz = 0;
+
+        try {
+            cursor = db.rawQuery(query, null);
+            if (cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndex("MAX(" + COLUMN_QUIZ_ID + ")");
+                if (columnIndex != -1) {
+                    lastSolvedQuiz = cursor.getInt(columnIndex);
+                } else {
+                    Log.e("DatabaseError", "Column 'MAX(" + COLUMN_QUIZ_ID + ")' not found");
+                }
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseError", "Error retrieving last solved quiz", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close(); // Cursor를 닫습니다.
+            }
+            db.close(); // 데이터베이스 연결을 닫습니다.
+        }
+
+        return lastSolvedQuiz;
     }
 }

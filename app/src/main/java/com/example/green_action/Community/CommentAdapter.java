@@ -30,11 +30,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     private final List<Comment> commentList;
     private final Context context;
     private final String postId;
+    private final String boardType;  // 추가: 게시판 유형
 
-    public CommentAdapter(List<Comment> commentList, Context context, String postId) {
+    public CommentAdapter(List<Comment> commentList, Context context, String postId, String boardType) {
         this.commentList = commentList;
         this.context = context;
         this.postId = postId;
+        this.boardType = boardType; // 게시판 유형 초기화
     }
 
     @NonNull
@@ -81,6 +83,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 intent.putExtra("commentId", comment.getCommentId());
                 intent.putExtra("postId", postId);
                 intent.putExtra("commentText", comment.getCommentText());
+                intent.putExtra("boardType", boardType); // 게시판 유형을 인텐트에 추가
                 context.startActivity(intent);
             } else {
                 Toast.makeText(context, "수정 권한이 없습니다.", Toast.LENGTH_SHORT).show();

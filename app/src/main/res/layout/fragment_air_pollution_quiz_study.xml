@@ -26,8 +26,9 @@
         android:id="@+id/buttonQuizAndLearn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="퀴즈"
+        android:text="퀴즈 풀기"
         android:gravity="center"
         android:textSize="16sp"
-        android:layout_gravity="center_horizontal|center_vertical"/>
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:backgroundTint="@color/airPollution"/>
 </LinearLayout>

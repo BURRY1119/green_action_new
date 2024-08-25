@@ -27,11 +27,13 @@ public class CommunityPostAdapter extends RecyclerView.Adapter<CommunityPostAdap
     private final List<CommunityPostItem> postItemList;
     private final Context context;
     private final String loggedInUserId;
+    private final String boardType;  // 추가: 게시판 유형
 
-    public CommunityPostAdapter(List<CommunityPostItem> postItemList, Context context, String loggedInUserId) {
+    public CommunityPostAdapter(List<CommunityPostItem> postItemList, Context context, String loggedInUserId, String boardType) {
         this.postItemList = postItemList;
         this.context = context;
         this.loggedInUserId = loggedInUserId;
+        this.boardType = boardType; // 게시판 유형 초기화
     }
 
     @NonNull
@@ -74,7 +76,7 @@ public class CommunityPostAdapter extends RecyclerView.Adapter<CommunityPostAdap
         }
 
         // 좋아요 수를 Firebase에서 가져와 설정
-        DatabaseReference likeRef = FirebaseDatabase.getInstance().getReference("posts").child(postItem.getPostId()).child("likes");
+        DatabaseReference likeRef = FirebaseDatabase.getInstance().getReference(boardType).child(postItem.getPostId()).child("likes");
         likeRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -99,6 +101,7 @@ public class CommunityPostAdapter extends RecyclerView.Adapter<CommunityPostAdap
             intent.putExtra("title", postItem.getTitle());
             intent.putExtra("content", postItem.getContent());
             intent.putExtra("timestamp", postItem.getTimestamp());
+            intent.putExtra("boardType", boardType); // 게시판 유형을 인텐트에 추가
             context.startActivity(intent);
         });
     }

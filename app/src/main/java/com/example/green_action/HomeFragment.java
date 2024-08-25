@@ -33,17 +33,22 @@ import com.google.firebase.database.ValueEventListener;
 
 public class HomeFragment extends Fragment {
 
-    private TextView issueLatestPostTitle, freeLatestPostTitle, noticeLatestPostTitle, qnaLatestPostTitle;
+    private TextView issueBoardTitle, issueLatestPostTitle, freeBoardTitle, freeLatestPostTitle;
+    private TextView noticeBoardTitle, noticeLatestPostTitle, qnaBoardTitle, qnaLatestPostTitle;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // 최신 게시물 제목을 표시할 TextView 초기화
+        // 최신 게시물 제목과 게시판 이름을 표시할 TextView 초기화
+        issueBoardTitle = view.findViewById(R.id.tv_issue_board);
         issueLatestPostTitle = view.findViewById(R.id.tv_issue_latest_post_title);
+        freeBoardTitle = view.findViewById(R.id.tv_free_board);
         freeLatestPostTitle = view.findViewById(R.id.tv_free_latest_post_title);
+        noticeBoardTitle = view.findViewById(R.id.tv_notice_board);
         noticeLatestPostTitle = view.findViewById(R.id.tv_notice_latest_post_title);
+        qnaBoardTitle = view.findViewById(R.id.tv_qna_board);
         qnaLatestPostTitle = view.findViewById(R.id.tv_qna_latest_post_title);
 
         // 최신 게시물 제목 불러오기
@@ -58,11 +63,15 @@ public class HomeFragment extends Fragment {
         setButtonTouchListener(view.findViewById(R.id.soil_pollution));
         setButtonTouchListener(view.findViewById(R.id.plastic_pollution));
 
-        // TextView 클릭 이벤트 설정: 각 게시판으로 이동
-        setTextViewClickListener(view.findViewById(R.id.tv_issue_latest_post_title), IssueBoardActivity.class);
-        setTextViewClickListener(view.findViewById(R.id.tv_free_latest_post_title), FreeBoardActivity.class);
-        setTextViewClickListener(view.findViewById(R.id.tv_notice_latest_post_title), NoticeBoardActivity.class);
-        setTextViewClickListener(view.findViewById(R.id.tv_qna_latest_post_title), QnaBoardActivity.class);
+        // TextView 클릭 이벤트 설정: 각 게시판으로 이동 (게시판 이름과 최신 글 미리보기 모두 적용)
+        setTextViewClickListener(issueBoardTitle, IssueBoardActivity.class);
+        setTextViewClickListener(issueLatestPostTitle, IssueBoardActivity.class);
+        setTextViewClickListener(freeBoardTitle, FreeBoardActivity.class);
+        setTextViewClickListener(freeLatestPostTitle, FreeBoardActivity.class);
+        setTextViewClickListener(noticeBoardTitle, NoticeBoardActivity.class);
+        setTextViewClickListener(noticeLatestPostTitle, NoticeBoardActivity.class);
+        setTextViewClickListener(qnaBoardTitle, QnaBoardActivity.class);
+        setTextViewClickListener(qnaLatestPostTitle, QnaBoardActivity.class);
 
         return view;
     }
