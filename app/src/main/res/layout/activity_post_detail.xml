@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:fontFamily="@font/nanumeb">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="start"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/button_back_shape"
+        app:srcCompat="@drawable/car_ui_icon_arrow_back"
+        app:tint="@color/black" />
+
+    <ImageButton
+        android:id="@+id/post_more_button"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_gravity="end"
+        android:background="@drawable/menu"
+        android:contentDescription="More options"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="0dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:paddingTop="10dp"
+        android:id="@+id/detail_post_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/nanumeb"
+        android:text="Post Title"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/detail_post_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:fontFamily="@font/nanumeb"
+        android:text="Post Content"
+        android:textSize="20sp"
+        android:layout_marginTop="8dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/nanumeb"
+        android:layout_marginTop="4dp">
+
+        <!-- 타임스탬프 -->
+        <TextView
+            android:id="@+id/detail_post_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Timestamp"
+            android:textSize="14sp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true" />
+
+        <!-- 사용자 이름과 UID를 우측에 표시 -->
+        <TextView
+            android:id="@+id/detail_post_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nanumeb"
+            android:text="작성자 (UID)"
+            android:textSize="14sp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:textColor="#757575" />
+    </RelativeLayout>
+
+    <!-- 좋아요 버튼과 좋아요 카운트를 수평으로 배치 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/nanumeb">
+
+        <Button
+
+            android:background="@drawable/pinkheart"
+            android:id="@+id/like_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+
+            />
+
+        <TextView
+            android:id="@+id/like_count_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="0" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/like_status_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="21dp"
+        android:text="  LIKE" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="16dp"
+        android:background="#CCCCCC" />
+
+    <!-- 댓글 RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/comment_recycler_view"
+
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp" />
+
+    <!-- 댓글 작성란 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/comment_edit_text"
+            android:background="@drawable/searchview_shape2"
+            android:padding="15dp"
+            android:layout_width="0dp"
+            android:layout_marginRight="10dp"
+            android:fontFamily="@font/nanumeb"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="댓글을 입력하세요" />
+
+        <Button
+            android:id="@+id/submit_comment_button"
+            android:layout_width="42dp"
+            android:layout_height="50dp"
+            android:background="@drawable/send"
+            android:fontFamily="@font/nanumeb"
+            android:paddingLeft="10dp" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Group
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <androidx.constraintlayout.widget.Group
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

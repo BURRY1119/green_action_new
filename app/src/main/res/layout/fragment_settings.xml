@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- 프로필 이미지 -->
+        <ImageView
+            android:id="@+id/user_profile_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/ic_profile_placeholder"
+            android:scaleType="centerCrop" />
+
+        <!-- 사용자 아이디 -->
+        <TextView
+            android:id="@+id/user_id_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="아이디"
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
+
+        <!-- 사용자 이메일 -->
+        <TextView
+            android:id="@+id/user_email_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="이메일"
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
+
+        <!-- 사용자 이름 -->
+        <TextView
+            android:id="@+id/user_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="이름"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"/>
+
+        <!-- 사용자 연락처 -->
+        <TextView
+            android:id="@+id/user_contact_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="연락처"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"/>
+
+        <!-- 로그아웃 버튼 -->
+        <Button
+            android:id="@+id/logout_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="로그아웃"
+            android:background="@color/actionGreen"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
+
+</ScrollView>

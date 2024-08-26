@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:background="@drawable/searchview_shape3"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- 댓글 내용과 사용자 정보가 수평으로 배치된 레이아웃 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 댓글 내용 -->
+        <TextView
+            android:textColor="@color/black"
+            android:id="@+id/comment_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nanumeb"
+            android:text="Comment content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true" />
+
+        <!-- 사용자 이름과 ID를 우측에 작게 표시 -->
+        <TextView
+            android:id="@+id/comment_user_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username (UserID)"
+            android:fontFamily="@font/nanumeb"
+            android:textSize="12sp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:textColor="#757575" />
+    </RelativeLayout>
+
+    <!-- 타임스탬프 -->
+    <TextView
+        android:id="@+id/comment_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/nanumeb"
+        android:text="Timestamp"
+        android:textSize="12sp"
+        android:layout_marginTop="2dp"
+        android:textColor="#757575" />
+
+
+</LinearLayout>

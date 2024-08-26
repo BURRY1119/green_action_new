@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "324674044015",
+    "firebase_url": "https://green--action-default-rtdb.firebaseio.com",
+    "project_id": "green--action",
+    "storage_bucket": "green--action.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:324674044015:android:0a3d8d79c993ffa3400d9a",
+        "android_client_info": {
+          "package_name": "com.example.green_action"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "324674044015-13c2j92l02msnv3mjrh25ibhvmi5rich.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.green_action",
+            "certificate_hash": "3a8ac997774e5508ea7388fd990328cc8f0bce71"
+          }
+        },
+        {
+          "client_id": "324674044015-5ceg9dpgdlu6np2sc3jk4h2evkv0r7ae.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVPybb_iPPF79DxBZNB2FsCTxji62tPt4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "324674044015-5ceg9dpgdlu6np2sc3jk4h2evkv0r7ae.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

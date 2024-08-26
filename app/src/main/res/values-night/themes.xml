@@ -1,0 +1,20 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- 기본 애플리케이션 테마 -->
+    <style name="Base.Theme.GreenAction" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- 기본 브랜드 색상 -->
+        <item name="colorPrimary">@color/actionGreenDark</item> <!-- 기본 색상 -->
+        <item name="colorPrimaryVariant">@color/actionGreenDark</item> <!-- 기본 색상 변형 -->
+        <item name="colorOnPrimary">#FFFFFF</item> <!-- 기본 색상 위의 텍스트 색상 (흰색) -->
+
+        <!-- 보조 브랜드 색상 -->
+        <item name="colorSecondary">#03DAC5</item> <!-- 보조 색상 -->
+        <item name="colorSecondaryVariant">#018786</item> <!-- 보조 색상 변형 -->
+        <item name="colorOnSecondary">#000000</item> <!-- 보조 색상 위의 텍스트 색상 (검정색) -->
+
+        <!-- 상태 바 색상 -->
+        <item name="android:statusBarColor">@color/actionGreen</item> <!-- 상태 바 색상 -->
+    </style>
+
+    <!-- 상속받은 테마 -->
+    <style name="Theme.GreenAction" parent="Base.Theme.GreenAction" />
+</resources>
