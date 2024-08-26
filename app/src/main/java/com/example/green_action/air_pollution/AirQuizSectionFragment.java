@@ -1,6 +1,5 @@
 package com.example.green_action.air_pollution;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -135,8 +134,8 @@ public class AirQuizSectionFragment extends Fragment {
                         int scoreToAdd = quizViewModel.getCurrentMaxScore();
                         Toast.makeText(getContext(), "정답입니다! " + "+" + scoreToAdd + "점", Toast.LENGTH_SHORT).show();
                         saveUserScore(scoreToAdd);
-                        saveQuizProgress(true);
-                        getParentFragmentManager().setFragmentResult("quiz_result", createResultBundle(quizId, true));
+                        saveQuizProgress();
+                        getParentFragmentManager().setFragmentResult("quiz_result", createResultBundle(quizId));
                         navigateToAirQuizListFragment();
                     } else {
                         updateQuizOnWrongAnswer(quizDetail);
@@ -195,16 +194,16 @@ public class AirQuizSectionFragment extends Fragment {
         }
     }
 
-    private void saveQuizProgress(boolean isSolved) {
+    private void saveQuizProgress() {
         if (userId != null) {
-            firebaseClient.saveQuizProgress(userId, quizId, isSolved);
+            firebaseClient.saveQuizProgress(userId, quizId, true);
         }
     }
 
-    private Bundle createResultBundle(int solvedQuizNumber, boolean isCorrect) {
+    private Bundle createResultBundle(int solvedQuizNumber) {
         Bundle result = new Bundle();
         result.putInt("SOLVED_QUIZ_NUMBER", solvedQuizNumber);
-        result.putBoolean("IS_CORRECT", isCorrect);
+        result.putBoolean("IS_CORRECT", true);
         return result;
     }
 

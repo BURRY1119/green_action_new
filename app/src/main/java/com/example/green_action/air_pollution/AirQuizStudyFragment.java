@@ -32,7 +32,6 @@ public class AirQuizStudyFragment extends Fragment {
     private int quizNumber;
     private String pollutionType; // 오염 유형을 저장할 변수
     private TextView textView;
-    private Button buttonStartQuiz;
     private FirebaseClient firebaseClient;
 
     @Nullable
@@ -40,7 +39,7 @@ public class AirQuizStudyFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_air_pollution_quiz_study, container, false);
         textView = view.findViewById(R.id.textViewAirPollution);
-        buttonStartQuiz = view.findViewById(R.id.buttonQuizAndLearn);
+        Button buttonStartQuiz = view.findViewById(R.id.buttonQuizAndLearn);
 
         // Initialize FirebaseClient
         firebaseClient = new FirebaseClient();

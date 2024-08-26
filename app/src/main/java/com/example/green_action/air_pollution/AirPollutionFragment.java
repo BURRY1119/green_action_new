@@ -22,6 +22,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,14 +40,13 @@ public class AirPollutionFragment extends Fragment {
     private static final String API_KEY = "zgDi2jCAAHkGbiYY9vTynvRLYSU3sGls9eAJM4HnHCgjj5AQM05gxkuESMijNOcgGJS+FBii9jYfBtH+Zs4ESQ==";
     private static final String BASE_URL = "https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty";
     private TextView textView;
-    private Button buttonQuizAndLearn;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_air_pollution, container, false);
         textView = view.findViewById(R.id.textViewAirPollution);
-        buttonQuizAndLearn = view.findViewById(R.id.buttonQuizAndLearn);
+        Button buttonQuizAndLearn = view.findViewById(R.id.buttonQuizAndLearn);
 
         // 퀴즈 버튼에 클릭 리스너 추가
         buttonQuizAndLearn.setOnClickListener(v -> loadQuizFragment());
@@ -127,7 +127,7 @@ public class AirPollutionFragment extends Fragment {
             List<Map<String, String>> dataList = new ArrayList<>();
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new java.io.ByteArrayInputStream(xmlData.getBytes("UTF-8")));
+            Document document = builder.parse(new java.io.ByteArrayInputStream(xmlData.getBytes(StandardCharsets.UTF_8)));
             document.getDocumentElement().normalize();
 
             NodeList nodeList = document.getElementsByTagName("item");

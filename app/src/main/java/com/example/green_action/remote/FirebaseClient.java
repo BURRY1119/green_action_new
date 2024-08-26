@@ -19,7 +19,6 @@ import com.google.firebase.database.ValueEventListener;
 
 public class FirebaseClient {
 
-    private final FirebaseDatabase database;
     private final DatabaseReference dbRef;
     private final DatabaseReference usersRef;
     private final DatabaseReference postsRef;
@@ -28,7 +27,7 @@ public class FirebaseClient {
     private static final String TAG = "FirebaseClient";
 
     public FirebaseClient() {
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         dbRef = database.getReference();
         usersRef = dbRef.child("users");
         postsRef = dbRef.child("posts");
@@ -64,12 +63,12 @@ public class FirebaseClient {
     public void isIDExists(String id, final DataBaseHandler.OnCheckUserExistsListener listener) {
         usersRef.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 listener.onCheck(dataSnapshot.exists());
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
                 listener.onCheck(false);
             }
         });

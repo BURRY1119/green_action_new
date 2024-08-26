@@ -134,11 +134,7 @@ public class AirQuizListFragment extends Fragment {
         for (int i = 1; i <= NUM_COLUMNS * NUM_ROWS; i++) {
             if (i <= lastSolvedQuiz) {
                 updateButtonState(i, true, false);
-            } else if (i == lastSolvedQuiz + 1) {
-                updateButtonState(i, false, true);
-            } else {
-                updateButtonState(i, false, false);
-            }
+            } else updateButtonState(i, false, i == lastSolvedQuiz + 1);
         }
     }
 
