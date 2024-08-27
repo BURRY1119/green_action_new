@@ -1,6 +1,5 @@
 package com.example.green_action.plastic_pollution;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,28 +16,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.green_action.R;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 public class PlasticPollutionFragment extends Fragment {
 
-    private static final String API_KEY = "zgDi2jCAAHkGbiYY9vTynvRLYSU3sGls9eAJM4HnHCgjj5AQM05gxkuESMijNOcgGJS+FBii9jYfBtH+Zs4ESQ==";
-    private static final String BASE_URL = "https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty";
     private TextView textView;
 
     @Nullable
@@ -51,8 +30,8 @@ public class PlasticPollutionFragment extends Fragment {
         // 퀴즈 버튼에 클릭 리스너 추가
         buttonQuizAndLearn.setOnClickListener(v -> loadQuizFragment());
 
-        // 공기오염 데이터 가져오기
-        fetchAirPollutionData();
+        // 플라스틱 오염 개요 설명 텍스트 설정
+        setPlasticPollutionOverview();
 
         // 뒤로 가기 버튼 설정
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
@@ -80,79 +59,12 @@ public class PlasticPollutionFragment extends Fragment {
         transaction.commit();
     }
 
-    private void fetchAirPollutionData() {
-        new FetchAirPollutionTask().execute("경기"); // 예시로 '경기' 데이터를 가져옵니다.
-    }
+    private void setPlasticPollutionOverview() {
+        String overview = "플라스틱 오염은 전 세계적으로 심각한 환경 문제 중 하나로, 수백만 톤의 플라스틱이 매년 바다로 유입되고 있습니다. "
+                + "플라스틱은 분해되기까지 수백 년이 걸리며, 그 과정에서 미세 플라스틱으로 분해되어 해양 생물과 인간에게 해를 끼칠 수 있습니다. "
+                + "플라스틱 제품의 남용과 폐기물 관리 부족은 환경을 오염시키고, 해양 생태계에 심각한 위협을 가하고 있습니다. "
+                + "우리는 플라스틱 사용을 줄이고, 재활용을 늘리며, 플라스틱 대체재를 사용하는 등 플라스틱 오염을 줄이기 위한 노력을 기울여야 합니다.";
 
-    private class FetchAirPollutionTask extends AsyncTask<String, Void, List<Map<String, String>>> {
-
-        @Override
-        protected List<Map<String, String>> doInBackground(String... params) {
-            String sidoName = params[0];
-            OkHttpClient client = new OkHttpClient();
-
-            try {
-                String url = BASE_URL + "?serviceKey=" + URLEncoder.encode(API_KEY, "UTF-8")
-                        + "&returnType=xml&numOfRows=10&pageNo=1&sidoName=" + URLEncoder.encode(sidoName, "UTF-8") + "&ver=1.3";
-                Request request = new Request.Builder().url(url).build();
-                Response response = client.newCall(request).execute();
-
-                if (response.isSuccessful() && response.body() != null) {
-                    String xmlData = response.body().string();
-                    return parseXml(xmlData);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(List<Map<String, String>> result) {
-            if (result != null && !result.isEmpty()) {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (Map<String, String> item : result) {
-                    for (Map.Entry<String, String> entry : item.entrySet()) {
-                        stringBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
-                    }
-                    stringBuilder.append("\n");
-                }
-                textView.setText(stringBuilder.toString());
-            } else {
-                textView.setText("데이터를 가져오는 데 실패했습니다.");
-            }
-        }
-
-        private List<Map<String, String>> parseXml(String xmlData) throws Exception {
-            List<Map<String, String>> dataList = new ArrayList<>();
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new java.io.ByteArrayInputStream(xmlData.getBytes(StandardCharsets.UTF_8)));
-            document.getDocumentElement().normalize();
-
-            NodeList nodeList = document.getElementsByTagName("item");
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Element element = (Element) nodeList.item(i);
-                Map<String, String> dataMap = new HashMap<>();
-                String[] tags = {"stationName", "mangName", "sidoName", "dataTime", "so2Value", "coValue", "o3Value", "no2Value",
-                        "pm10Value", "pm10Value24", "pm25Value", "pm25Value24", "khaiValue", "khaiGrade", "so2Grade",
-                        "coGrade", "o3Grade", "no2Grade", "pm10Grade", "pm25Grade", "pm10Grade1h", "pm25Grade1h",
-                        "so2Flag", "coFlag", "o3Flag", "no2Flag", "pm10Flag", "pm25Flag"};
-
-                for (String tag : tags) {
-                    dataMap.put(tag, getTagValue(tag, element));
-                }
-                dataList.add(dataMap);
-            }
-            return dataList;
-        }
-
-        private String getTagValue(String tag, Element element) {
-            NodeList nodeList = element.getElementsByTagName(tag);
-            if (nodeList.getLength() > 0) {
-                return nodeList.item(0).getTextContent();
-            }
-            return "N/A"; // 데이터가 없을 경우 기본값
-        }
+        textView.setText(overview);
     }
 }

@@ -1,6 +1,5 @@
 package com.example.green_action.water_pollution;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,28 +16,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.green_action.R;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 public class WaterPollutionFragment extends Fragment {
 
-    private static final String API_KEY = "zgDi2jCAAHkGbiYY9vTynvRLYSU3sGls9eAJM4HnHCgjj5AQM05gxkuESMijNOcgGJS+FBii9jYfBtH+Zs4ESQ==";
-    private static final String BASE_URL = "https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty";
     private TextView textView;
 
     @Nullable
@@ -51,8 +30,8 @@ public class WaterPollutionFragment extends Fragment {
         // 퀴즈 버튼에 클릭 리스너 추가
         buttonQuizAndLearn.setOnClickListener(v -> loadQuizFragment());
 
-        // 공기오염 데이터 가져오기
-        fetchAirPollutionData();
+        // 수질 오염 개요 설명 텍스트 설정
+        setWaterPollutionOverview();
 
         // 뒤로 가기 버튼 설정
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
@@ -73,86 +52,21 @@ public class WaterPollutionFragment extends Fragment {
 
     private void loadQuizFragment() {
         Fragment quizFragment = new WaterQuizListFragment();
-        FragmentManager fragmentManager = getParentFragmentManager(); // getParentFragmentManager() 사용
+        FragmentManager fragmentManager = getParentFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_container, quizFragment); // fragment_container는 실제 프래그먼트 컨테이너 ID로 변경하세요.
         transaction.addToBackStack(null); // 백스택에 추가하여 뒤로가기 기능 추가
         transaction.commit();
     }
 
-    private void fetchAirPollutionData() {
-        new FetchAirPollutionTask().execute("경기"); // 예시로 '경기' 데이터를 가져옵니다.
-    }
+    private void setWaterPollutionOverview() {
+        String overview = "수질 오염은 인간과 생태계에 치명적인 영향을 미치는 중요한 환경 문제입니다. "
+                + "수질 오염의 주요 원인은 산업 폐기물, 가정용 폐수, 농업용 비료 및 살충제 등입니다. "
+                + "이러한 오염 물질은 하천과 바다로 흘러들어가 물고기와 해양 생물을 해치며, 인간의 식수에도 위협이 될 수 있습니다. "
+                + "대기 오염과 마찬가지로, 수질 오염을 막는 것은 우리의 건강과 지구의 미래를 보호하기 위해 매우 중요합니다. "
+                + "깨끗한 물을 유지하는 것은 모든 생명체의 생존을 위해 필수적입니다. "
+                + "따라서, 우리는 수질 오염을 줄이기 위한 노력을 다해야 하며, 이를 위해 폐수를 적절히 처리하고 화학물질 사용을 줄이는 등의 방안을 강구해야 합니다.";
 
-    private class FetchAirPollutionTask extends AsyncTask<String, Void, List<Map<String, String>>> {
-
-        @Override
-        protected List<Map<String, String>> doInBackground(String... params) {
-            String sidoName = params[0];
-            OkHttpClient client = new OkHttpClient();
-
-            try {
-                String url = BASE_URL + "?serviceKey=" + URLEncoder.encode(API_KEY, "UTF-8")
-                        + "&returnType=xml&numOfRows=10&pageNo=1&sidoName=" + URLEncoder.encode(sidoName, "UTF-8") + "&ver=1.3";
-                Request request = new Request.Builder().url(url).build();
-                Response response = client.newCall(request).execute();
-
-                if (response.isSuccessful() && response.body() != null) {
-                    String xmlData = response.body().string();
-                    return parseXml(xmlData);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(List<Map<String, String>> result) {
-            if (result != null && !result.isEmpty()) {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (Map<String, String> item : result) {
-                    for (Map.Entry<String, String> entry : item.entrySet()) {
-                        stringBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
-                    }
-                    stringBuilder.append("\n");
-                }
-                textView.setText(stringBuilder.toString());
-            } else {
-                textView.setText("데이터를 가져오는 데 실패했습니다.");
-            }
-        }
-
-        private List<Map<String, String>> parseXml(String xmlData) throws Exception {
-            List<Map<String, String>> dataList = new ArrayList<>();
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new java.io.ByteArrayInputStream(xmlData.getBytes(StandardCharsets.UTF_8)));
-            document.getDocumentElement().normalize();
-
-            NodeList nodeList = document.getElementsByTagName("item");
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Element element = (Element) nodeList.item(i);
-                Map<String, String> dataMap = new HashMap<>();
-                String[] tags = {"stationName", "mangName", "sidoName", "dataTime", "so2Value", "coValue", "o3Value", "no2Value",
-                        "pm10Value", "pm10Value24", "pm25Value", "pm25Value24", "khaiValue", "khaiGrade", "so2Grade",
-                        "coGrade", "o3Grade", "no2Grade", "pm10Grade", "pm25Grade", "pm10Grade1h", "pm25Grade1h",
-                        "so2Flag", "coFlag", "o3Flag", "no2Flag", "pm10Flag", "pm25Flag"};
-
-                for (String tag : tags) {
-                    dataMap.put(tag, getTagValue(tag, element));
-                }
-                dataList.add(dataMap);
-            }
-            return dataList;
-        }
-
-        private String getTagValue(String tag, Element element) {
-            NodeList nodeList = element.getElementsByTagName(tag);
-            if (nodeList.getLength() > 0) {
-                return nodeList.item(0).getTextContent();
-            }
-            return "N/A"; // 데이터가 없을 경우 기본값
-        }
+        textView.setText(overview);
     }
 }
