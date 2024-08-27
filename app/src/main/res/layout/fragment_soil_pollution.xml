@@ -5,9 +5,30 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- 여기에 Soil Pollution Fragment의 내용을 추가합니다 -->
-    <TextView
+    <!-- ScrollView의 높이를 제한하여 TextView의 출력 범위를 상단으로 제한 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="32dp">
+
+        <TextView
+            android:id="@+id/textViewSoilPollution"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:textSize="16sp" />
+
+    </ScrollView>
+
+    <!-- 버튼이 화면 하단 절반을 차지하도록 설정 -->
+    <Button
+        android:id="@+id/buttonQuizAndLearn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Soil Pollution" />
+        android:text="학습 및 퀴즈"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:backgroundTint="@color/soilPollution"/>
 </LinearLayout>
