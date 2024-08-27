@@ -5,23 +5,155 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- ScrollView의 높이를 제한하여 TextView의 출력 범위를 상단으로 제한 -->
+    <TextView
+        android:id="@+id/airQualityIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="전국 실시간 대기 상태"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingBottom="10dp"
+        android:layout_gravity="center_horizontal"/>
+
+    <!-- 색상 지표 표시 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="좋음"
+            android:background="#ADD8E6"
+            android:textColor="#000000"
+            android:padding="5dp"
+            android:layout_marginRight="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="보통"
+            android:textColor="#000000"
+            android:padding="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/airPollution"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="나쁨"
+            android:background="#EAEA89"
+            android:textColor="#000000"
+            android:padding="5dp"
+            android:layout_marginRight="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="매우 나쁨"
+            android:background="#EA8282"
+            android:textColor="#000000"
+            android:padding="5dp" />
+    </LinearLayout>
+
+    <!-- 지역 선택 버튼들 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
+
+        <Button
+            android:id="@+id/btnSeoul"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:backgroundTint="@color/airPollution"
+            android:text="서울" />
+
+        <Button
+            android:id="@+id/btnGyeonggi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="경기"
+            android:layout_marginRight="5dp"
+            android:backgroundTint="@color/airPollution" />
+
+        <Button
+            android:id="@+id/btnIncheon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="인천"
+            android:layout_marginRight="5dp"
+            android:backgroundTint="@color/airPollution" />
+
+        <Button
+            android:id="@+id/btnGangwon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="강원"
+            android:layout_marginRight="5dp"
+            android:backgroundTint="@color/airPollution" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
+
+        <Button
+            android:id="@+id/btnChungcheong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="충청"
+            android:layout_marginRight="5dp"
+            android:backgroundTint="@color/airPollution" />
+
+        <Button
+            android:id="@+id/btnJeolla"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="전라"
+            android:layout_marginRight="5dp"
+            android:backgroundTint="@color/airPollution" />
+
+        <Button
+            android:id="@+id/btnGyeongsang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="경상"
+            android:layout_marginRight="5dp"
+            android:backgroundTint="@color/airPollution" />
+
+        <Button
+            android:id="@+id/btnJeju"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="제주"
+            android:layout_marginRight="5dp"
+            android:backgroundTint="@color/airPollution" />
+    </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginBottom="32dp">
 
-        <TextView
-            android:id="@+id/textViewAirPollution"
+        <LinearLayout
+            android:id="@+id/linearLayoutContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Loading..."
-            android:textSize="16sp" />
-
+            android:orientation="vertical" />
     </ScrollView>
 
-    <!-- 버튼이 화면 하단 절반을 차지하도록 설정 -->
     <Button
         android:id="@+id/buttonQuizAndLearn"
         android:layout_width="wrap_content"
@@ -30,5 +162,5 @@
         android:gravity="center"
         android:textSize="16sp"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:backgroundTint="@color/airPollution"/>
+        android:backgroundTint="@color/airPollution" />
 </LinearLayout>
