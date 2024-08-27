@@ -252,7 +252,6 @@ public class FirebaseClient {
         dailyQuizRef.child(dailyQuizId).addListenerForSingleValueEvent(listener);
     }
 
-
     // 사용자별 마지막 퀴즈 풀이 시간을 불러오는 메서드
     public void loadLastQuizTime(String userId, int quizId, ValueEventListener listener) {
         if (userId != null) {

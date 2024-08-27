@@ -135,8 +135,10 @@ public class DailyQuizFragment extends Fragment {
                 if (snapshot != null && snapshot.exists()) {
                     Long lastTime = snapshot.getValue(Long.class);
                     long currentTime = System.currentTimeMillis();
-                    if (lastTime != null && currentTime - lastTime < QUIZ_INTERVAL) {
-                        disableQuiz();
+                    long nextAvailableTime = lastTime + QUIZ_INTERVAL;
+
+                    if (lastTime != null && currentTime < nextAvailableTime) {
+                        disableQuiz(nextAvailableTime - currentTime);
                     } else {
                         loadQuiz();
                     }
@@ -152,8 +154,8 @@ public class DailyQuizFragment extends Fragment {
         });
     }
 
-    private void disableQuiz() {
-        quizTextView.setText("해당 문제는 이미 풀었습니다. 30초 후에 새로운 문제를 풀 수 있습니다.");
+    private void disableQuiz(long remainingTime) {
+        quizTextView.setText("해당 문제는 이미 풀었습니다. " + (remainingTime / 1000) + "초 후에 새로운 문제를 풀 수 있습니다.");
         actionButton.setEnabled(false);
         answerEditText.setEnabled(false);
     }
