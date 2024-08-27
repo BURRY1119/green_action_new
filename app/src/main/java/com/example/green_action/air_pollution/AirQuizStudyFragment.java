@@ -101,18 +101,13 @@ public class AirQuizStudyFragment extends Fragment {
         }
 
         String userId = currentUser.getUid();
-        firebaseClient.getUsersRef().child(userId).child("lastSolvedQuiz").addListenerForSingleValueEvent(new ValueEventListener() {
+        firebaseClient.loadQuizProgress(userId, pollutionType, new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Integer lastSolvedQuiz = snapshot.getValue(Integer.class);
-                    if (lastSolvedQuiz != null && quizNumber <= lastSolvedQuiz) {
-                        Toast.makeText(getContext(), "이미 푼 문제입니다", Toast.LENGTH_SHORT).show();
-                    } else {
-                        startQuiz();
-                    }
+                Integer lastSolvedQuiz = snapshot.getValue(Integer.class);
+                if (lastSolvedQuiz != null && quizNumber <= lastSolvedQuiz) {
+                    Toast.makeText(getContext(), "이미 푼 문제입니다", Toast.LENGTH_SHORT).show();
                 } else {
-                    // lastSolvedQuiz가 존재하지 않는 경우
                     startQuiz();
                 }
             }

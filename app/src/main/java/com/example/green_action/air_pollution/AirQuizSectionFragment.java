@@ -69,7 +69,7 @@ public class AirQuizSectionFragment extends Fragment {
         }
 
         if (getArguments() != null) {
-            quizId = getArguments().getInt("QUIZ_NUMBER", 1);
+            quizId = getArguments().getInt("QUIZ_NUMBER", 0);
             pollutionType = getArguments().getString("POLLUTION_TYPE", "air_pollution");
         }
 
@@ -196,7 +196,7 @@ public class AirQuizSectionFragment extends Fragment {
 
     private void saveQuizProgress() {
         if (userId != null) {
-            firebaseClient.saveQuizProgress(userId, quizId, true);
+            firebaseClient.saveQuizProgress(userId, pollutionType, quizId);
         }
     }
 

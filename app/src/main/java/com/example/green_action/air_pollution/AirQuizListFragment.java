@@ -31,6 +31,7 @@ public class AirQuizListFragment extends Fragment {
     private GridLayout gridLayout;
     private FirebaseClient firebaseClient;
     private String userId;
+    private String pollutionType = "air_pollution";  // 이 부분은 전달받거나 설정해야 할 부분
     private int lastSolvedQuiz = 0;
 
     @Nullable
@@ -97,7 +98,7 @@ public class AirQuizListFragment extends Fragment {
         AirQuizStudyFragment studyFragment = new AirQuizStudyFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("QUIZ_NUMBER", quizNumber);
-        bundle.putString("POLLUTION_TYPE", "air_pollution");
+        bundle.putString("POLLUTION_TYPE", pollutionType);
 
         studyFragment.setArguments(bundle);
 
@@ -108,9 +109,9 @@ public class AirQuizListFragment extends Fragment {
     }
 
     private void loadLastSolvedQuiz() {
-        if (userId != null) {
-            Log.d(TAG, "Loading last solved quiz for user: " + userId);
-            firebaseClient.lastSolvedQuiz(userId, new ValueEventListener() {
+        if (userId != null && pollutionType != null) {
+            Log.d(TAG, "Loading last solved quiz for user: " + userId + " and pollution type: " + pollutionType);
+            firebaseClient.loadQuizProgress(userId, pollutionType, new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Log.d(TAG, "DataSnapshot received: " + dataSnapshot);
@@ -134,7 +135,9 @@ public class AirQuizListFragment extends Fragment {
         for (int i = 1; i <= NUM_COLUMNS * NUM_ROWS; i++) {
             if (i <= lastSolvedQuiz) {
                 updateButtonState(i, true, false);
-            } else updateButtonState(i, false, i == lastSolvedQuiz + 1);
+            } else {
+                updateButtonState(i, false, i == lastSolvedQuiz + 1);
+            }
         }
     }
 
@@ -171,8 +174,8 @@ public class AirQuizListFragment extends Fragment {
                 }
             }
 
-            if (userId != null) {
-                firebaseClient.saveQuizProgress(userId, lastSolvedQuiz, true);
+            if (userId != null && pollutionType != null) {
+                firebaseClient.saveQuizProgress(userId, pollutionType, lastSolvedQuiz);
             }
         } else {
             Log.d(TAG, "Answer is incorrect. No changes to the quiz states.");
