@@ -16,7 +16,7 @@
             android:id="@+id/textViewAirPollution"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Air Pollution"
+            android:text="Loading..."
             android:textSize="16sp" />
 
     </ScrollView>

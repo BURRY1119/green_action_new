@@ -1,4 +1,4 @@
-package com.example.green_action.air_pollution;
+package com.example.green_action.water_pollution;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,9 +28,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-public class AirQuizSectionFragment extends Fragment {
+public class WaterQuizSectionFragment extends Fragment {
 
-    private static final String TAG = "AirQuizSectionFragment";
+    private static final String TAG = "WaterQuizSectionFragment";
 
     private TextView quizTextView;
     private TextView scoreTextView;
@@ -42,13 +42,13 @@ public class AirQuizSectionFragment extends Fragment {
     private String pollutionType;
     private QuizViewModel quizViewModel;
 
-    public AirQuizSectionFragment() {
+    public WaterQuizSectionFragment() {
         // Required empty public constructor
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_air_pollution_quiz_section, container, false);
+        return inflater.inflate(R.layout.fragment_water_pollution_quiz_section, container, false);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class AirQuizSectionFragment extends Fragment {
 
         if (getArguments() != null) {
             quizId = getArguments().getInt("QUIZ_NUMBER", 0);
-            pollutionType = getArguments().getString("POLLUTION_TYPE", "air_pollution");
+            pollutionType = getArguments().getString("POLLUTION_TYPE", "water_pollution");
         }
 
         // ViewModel에서 초기 값 복원
@@ -114,7 +114,7 @@ public class AirQuizSectionFragment extends Fragment {
         if (quizViewModel.getAttemptsLeft() > 0) {
             submitAnswer();
         } else {
-            navigateToAirQuizListFragment();
+            navigateToWaterQuizListFragment();
         }
     }
 
@@ -136,7 +136,7 @@ public class AirQuizSectionFragment extends Fragment {
                         saveUserScore(scoreToAdd);
                         saveQuizProgress();
                         getParentFragmentManager().setFragmentResult("quiz_result", createResultBundle(quizId));
-                        navigateToAirQuizListFragment();
+                        navigateToWaterQuizListFragment();
                     } else {
                         updateQuizOnWrongAnswer(quizDetail);
                     }
@@ -207,10 +207,10 @@ public class AirQuizSectionFragment extends Fragment {
         return result;
     }
 
-    private void navigateToAirQuizListFragment() {
+    private void navigateToWaterQuizListFragment() {
         FragmentManager fragmentManager = getParentFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.fragment_container, new AirQuizListFragment());
+        transaction.replace(R.id.fragment_container, new WaterQuizListFragment());
         transaction.addToBackStack(null);
         transaction.commit();
     }

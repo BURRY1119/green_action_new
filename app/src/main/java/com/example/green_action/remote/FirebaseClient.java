@@ -151,18 +151,18 @@ public class FirebaseClient {
     }
 
     // 사용자 퀴즈 상태를 Firebase에 저장하는 메서드
-    public void saveQuizState(String userId, int quizId, int maxScore, int attemptsLeft) {
+    public void saveQuizState(String userId, String pollutionType, int quizId, int maxScore, int attemptsLeft) {
         if (userId != null) {
-            DatabaseReference userQuizRef = usersRef.child(userId).child("quizzes").child(String.valueOf(quizId));
+            DatabaseReference userQuizRef = usersRef.child(userId).child("quizzes").child(pollutionType).child(String.valueOf(quizId));
             userQuizRef.child("maxScore").setValue(maxScore);
             userQuizRef.child("attemptsLeft").setValue(attemptsLeft);
         }
     }
 
     // 사용자 퀴즈 상태를 Firebase에서 불러오는 메서드
-    public void loadQuizState(String userId, int quizId, ValueEventListener listener) {
+    public void loadQuizState(String userId, String pollutionType, int quizId, ValueEventListener listener) {
         if (userId != null) {
-            DatabaseReference userQuizRef = usersRef.child(userId).child("quizzes").child(String.valueOf(quizId));
+            DatabaseReference userQuizRef = usersRef.child(userId).child("quizzes").child(pollutionType).child(String.valueOf(quizId));
             userQuizRef.addListenerForSingleValueEvent(listener);
         }
     }

@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:text="제출"
         android:layout_marginBottom="35dp"
-        android:backgroundTint="@color/airPollution"
+        android:backgroundTint="@color/waterPollution"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
