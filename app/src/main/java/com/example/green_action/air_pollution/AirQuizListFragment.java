@@ -188,14 +188,11 @@ public class AirQuizListFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                // AirPollutionFragment로 이동하도록 설정
                 FragmentManager fragmentManager = getParentFragmentManager();
-                if (fragmentManager.getBackStackEntryCount() > 0) {
-                    Log.d(TAG, "Popping back stack");
-                    fragmentManager.popBackStack();
-                } else {
-                    Log.d(TAG, "Default back action");
-                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
-                }
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.fragment_container, new AirPollutionFragment());
+                transaction.commit();
             }
         });
     }
