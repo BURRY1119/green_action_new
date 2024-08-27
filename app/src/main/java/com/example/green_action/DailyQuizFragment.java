@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -41,7 +42,7 @@ public class DailyQuizFragment extends Fragment {
     private QuizViewModel quizViewModel;
 
     private long lastQuizTime;
-    private static final long QUIZ_INTERVAL = 24 * 60 * 60 * 1000; // 24시간
+    public static final long QUIZ_INTERVAL = 30 * 1000; // 30초
 
     public DailyQuizFragment() {
         // Required empty public constructor
@@ -87,23 +88,60 @@ public class DailyQuizFragment extends Fragment {
         checkQuizAvailability();
 
         actionButton.setOnClickListener(v -> handleButtonClick());
+
+        // 뒤로가기 버튼 눌렀을 때 HomeFragment로 이동하도록 설정
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // HomeFragment로 전환
+                Fragment homeFragment = new HomeFragment();
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, homeFragment)
+                        .commit();
+            }
+        });
     }
 
     private void checkQuizAvailability() {
+        firebaseClient.loadLastQuizId(userId, new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot != null && snapshot.exists()) {
+                    Integer lastQuizId = snapshot.getValue(Integer.class);
+                    if (lastQuizId != null) {
+                        quizId = lastQuizId;
+                    } else {
+                        quizId = 1;
+                    }
+                } else {
+                    Log.e(TAG, "No last quiz ID found, defaulting to quizId 1.");
+                    quizId = 1;
+                }
+                Log.d(TAG, "Current quizId: " + quizId);
+                checkQuizAvailabilityByTime();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Failed to load last quiz id", error.toException());
+            }
+        });
+    }
+
+    private void checkQuizAvailabilityByTime() {
         firebaseClient.loadLastQuizTime(userId, quizId, new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Long lastTime = snapshot.getValue(Long.class);
-                if (lastTime != null) {
-                    lastQuizTime = lastTime;
+                if (snapshot != null && snapshot.exists()) {
+                    Long lastTime = snapshot.getValue(Long.class);
                     long currentTime = System.currentTimeMillis();
-                    if (currentTime - lastQuizTime < QUIZ_INTERVAL) {
+                    if (lastTime != null && currentTime - lastTime < QUIZ_INTERVAL) {
                         disableQuiz();
                     } else {
                         loadQuiz();
                     }
                 } else {
-                    loadQuiz();
+                    loadQuiz(); // If there's no last time recorded, allow the quiz to load.
                 }
             }
 
@@ -115,7 +153,7 @@ public class DailyQuizFragment extends Fragment {
     }
 
     private void disableQuiz() {
-        quizTextView.setText("해당 문제는 이미 풀었습니다. 24시간 후에 새로운 문제를 풀 수 있습니다.");
+        quizTextView.setText("해당 문제는 이미 풀었습니다. 30초 후에 새로운 문제를 풀 수 있습니다.");
         actionButton.setEnabled(false);
         answerEditText.setEnabled(false);
     }
@@ -124,7 +162,7 @@ public class DailyQuizFragment extends Fragment {
         firebaseClient.loadQuizDetail(quizId, new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot != null && dataSnapshot.exists()) { // Null 체크 추가
+                if (dataSnapshot != null && dataSnapshot.exists()) {
                     QuizDetail quizDetail = dataSnapshot.getValue(QuizDetail.class);
                     if (quizDetail != null) {
                         quizTextView.setText(quizDetail.getQuestion());
@@ -162,20 +200,25 @@ public class DailyQuizFragment extends Fragment {
         firebaseClient.loadQuizDetail(quizId, new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                QuizDetail quizDetail = dataSnapshot.getValue(QuizDetail.class);
-                if (quizDetail != null) {
-                    if (quizDetail.checkAnswer(userAnswer)) {
-                        int scoreToAdd = quizViewModel.getCurrentMaxScore();
-                        Toast.makeText(getContext(), "정답입니다! " + scoreToAdd + "점 획득", Toast.LENGTH_SHORT).show();
-                        displayExplanation(quizDetail);
-                        saveUserScore(scoreToAdd);
+                if (dataSnapshot != null && dataSnapshot.exists()) {
+                    QuizDetail quizDetail = dataSnapshot.getValue(QuizDetail.class);
+                    if (quizDetail != null) {
+                        if (quizDetail.checkAnswer(userAnswer)) {
+                            int scoreToAdd = quizViewModel.getCurrentMaxScore();
+                            Toast.makeText(getContext(), "정답입니다! " + scoreToAdd + "점 획득", Toast.LENGTH_SHORT).show();
+                            displayExplanation(quizDetail);
+                            saveUserScore(scoreToAdd);
+                        } else {
+                            displayExplanation(quizDetail);
+                        }
+                        saveQuizProgress();
                     } else {
-                        displayExplanation(quizDetail);
+                        Log.e(TAG, "QuizDetail is null for quizId: " + quizId);
+                        Toast.makeText(getContext(), "퀴즈 데이터를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
                     }
-                    saveQuizProgress();
                 } else {
-                    Log.e(TAG, "QuizDetail is null for quizId: " + quizId);
-                    Toast.makeText(getContext(), "퀴즈 데이터를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "DataSnapshot is null or does not exist for quizId: " + quizId);
+                    Toast.makeText(getContext(), "퀴즈 데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -204,6 +247,13 @@ public class DailyQuizFragment extends Fragment {
         if (userId != null) {
             long currentTime = System.currentTimeMillis();
             firebaseClient.saveQuizProgress(userId, quizId, currentTime);
+
+            // 다음 퀴즈 ID를 계산하여 7번을 넘어가면 다시 1번으로 리셋
+            quizId++;
+            if (quizId > 7) {
+                quizId = 1;
+            }
+            firebaseClient.saveLastQuizId(userId, quizId);
         }
     }
 }

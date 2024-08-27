@@ -267,10 +267,21 @@ public class FirebaseClient {
     // 사용자별 퀴즈 진행 상태를 저장하는 메소드
     public void saveQuizProgress(String userId, int quizId, long currentTime) {
         if (userId != null) {
-            DatabaseReference userQuizProgressRef = usersRef.child(userId).child("quiz_progress").child(String.valueOf(quizId)).child("lastQuizTime");
-            userQuizProgressRef.setValue(currentTime).addOnCompleteListener(task -> {
+            DatabaseReference userQuizProgressRef = usersRef.child(userId)
+                    .child("quiz_progress")
+                    .child(String.valueOf(quizId));
+
+            // 퀴즈 진행 상태와 시간을 함께 저장
+            userQuizProgressRef.child("lastQuizTime").setValue(currentTime).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "Quiz progress successfully updated for quizId " + quizId);
+
+                    // 다음 퀴즈 ID를 계산하고 저장
+                    int nextQuizId = quizId + 1;
+                    if (nextQuizId > 7) { // 7번이 마지막 퀴즈라면
+                        nextQuizId = 1; // 다시 1번으로 리셋
+                    }
+                    saveLastQuizId(userId, nextQuizId);
                 } else {
                     Log.e(TAG, "Failed to update quiz progress", task.getException());
                 }
@@ -282,7 +293,7 @@ public class FirebaseClient {
 
     // 퀴즈 디테일을 Firebase에서 불러오는 메서드
     public void loadQuizDetail(int quizId, ValueEventListener listener) {
-        DatabaseReference quizDetailRef = dailyQuizRef.child(String.valueOf(quizId)); // quizId를 String으로 변환하여 경로 접근
+        DatabaseReference quizDetailRef = dailyQuizRef.child(String.valueOf(quizId));
         quizDetailRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -306,5 +317,48 @@ public class FirebaseClient {
                 listener.onCancelled(databaseError);
             }
         });
+    }
+
+    // 마지막 푼 퀴즈 ID를 로드하는 메서드
+    public void loadLastQuizId(String userId, ValueEventListener listener) {
+        if (userId != null && !userId.isEmpty()) {
+            DatabaseReference lastQuizIdRef = usersRef.child(userId).child("lastQuizId");
+            lastQuizIdRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        listener.onDataChange(snapshot);
+                    } else {
+                        Log.e(TAG, "No last quiz ID found for user " + userId);
+                        listener.onDataChange(null); // 명시적으로 null 전달
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e(TAG, "Failed to load last quiz ID", error.toException());
+                    listener.onCancelled(error);
+                }
+            });
+        } else {
+            Log.e(TAG, "User ID is null or empty");
+            listener.onDataChange(null); // 명시적으로 null 전달
+        }
+    }
+
+    // 마지막 푼 퀴즈 ID를 저장하는 메서드
+    public void saveLastQuizId(String userId, int quizId) {
+        if (userId != null) {
+            DatabaseReference lastQuizIdRef = usersRef.child(userId).child("lastQuizId");
+            lastQuizIdRef.setValue(quizId).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "Last quiz ID successfully saved: " + quizId);
+                } else {
+                    Log.e(TAG, "Failed to save last quiz ID", task.getException());
+                }
+            });
+        } else {
+            Log.e(TAG, "User ID is null or empty");
+        }
     }
 }
