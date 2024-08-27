@@ -132,12 +132,11 @@ public class DailyQuizFragment extends Fragment {
         firebaseClient.loadLastQuizTime(userId, quizId, new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.exists()) {
-                    Long lastTime = snapshot.getValue(Long.class);
-                    long currentTime = System.currentTimeMillis();
+                Long lastTime = snapshot.exists() ? snapshot.getValue(Long.class) : null;
+                long currentTime = System.currentTimeMillis();
+                if (lastTime != null) {
                     long nextAvailableTime = lastTime + QUIZ_INTERVAL;
-
-                    if (lastTime != null && currentTime < nextAvailableTime) {
+                    if (currentTime < nextAvailableTime) {
                         disableQuiz(nextAvailableTime - currentTime);
                     } else {
                         loadQuiz();
@@ -248,14 +247,14 @@ public class DailyQuizFragment extends Fragment {
     private void saveQuizProgress() {
         if (userId != null) {
             long currentTime = System.currentTimeMillis();
-            firebaseClient.saveQuizProgress(userId, quizId, currentTime);
+            firebaseClient.saveQuizProgress(userId, quizId, currentTime); // 현재 시간을 저장
 
             // 다음 퀴즈 ID를 계산하여 7번을 넘어가면 다시 1번으로 리셋
             quizId++;
             if (quizId > 7) {
                 quizId = 1;
             }
-            firebaseClient.saveLastQuizId(userId, quizId);
+            firebaseClient.saveLastQuizId(userId, quizId); // 다음 퀴즈 ID를 저장
         }
     }
 }

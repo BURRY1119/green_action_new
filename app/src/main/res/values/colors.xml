@@ -3,6 +3,9 @@
     <color name="actionGreenDark">#AA4CAF50</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="gold">#FFD700</color>
+    <color name="silver">#BEBEBE</color>
+    <color name="bronze">#CD7F32</color>
     <color name="airPollution">#99CC00</color>
     <color name="waterPollution">#33B5E5</color>
     <color name="soilPollution">#FFBB33</color>
