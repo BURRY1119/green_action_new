@@ -251,4 +251,60 @@ public class FirebaseClient {
     public void loadDailyQuizData(String dailyQuizId, ValueEventListener listener) {
         dailyQuizRef.child(dailyQuizId).addListenerForSingleValueEvent(listener);
     }
+
+
+    // 사용자별 마지막 퀴즈 풀이 시간을 불러오는 메서드
+    public void loadLastQuizTime(String userId, int quizId, ValueEventListener listener) {
+        if (userId != null) {
+            DatabaseReference lastQuizTimeRef = usersRef.child(userId).child("quiz_progress").child(String.valueOf(quizId)).child("lastQuizTime");
+            lastQuizTimeRef.addListenerForSingleValueEvent(listener);
+        } else {
+            Log.e(TAG, "User ID is null or empty");
+            listener.onDataChange(null);
+        }
+    }
+
+    // 사용자별 퀴즈 진행 상태를 저장하는 메소드
+    public void saveQuizProgress(String userId, int quizId, long currentTime) {
+        if (userId != null) {
+            DatabaseReference userQuizProgressRef = usersRef.child(userId).child("quiz_progress").child(String.valueOf(quizId)).child("lastQuizTime");
+            userQuizProgressRef.setValue(currentTime).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "Quiz progress successfully updated for quizId " + quizId);
+                } else {
+                    Log.e(TAG, "Failed to update quiz progress", task.getException());
+                }
+            });
+        } else {
+            Log.e(TAG, "User ID is null or empty");
+        }
+    }
+
+    // 퀴즈 디테일을 Firebase에서 불러오는 메서드
+    public void loadQuizDetail(int quizId, ValueEventListener listener) {
+        DatabaseReference quizDetailRef = dailyQuizRef.child(String.valueOf(quizId)); // quizId를 String으로 변환하여 경로 접근
+        quizDetailRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    QuizDetail quizDetail = dataSnapshot.getValue(QuizDetail.class);
+                    if (quizDetail != null) {
+                        listener.onDataChange(dataSnapshot);
+                    } else {
+                        Log.e(TAG, "QuizDetail is null for quizId: " + quizId);
+                        listener.onDataChange(null); // 명시적으로 null 전달
+                    }
+                } else {
+                    Log.e(TAG, "DataSnapshot does not exist for quizId: " + quizId);
+                    listener.onDataChange(null); // 명시적으로 null 전달
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "퀴즈 데이터를 불러오는 중 오류 발생", databaseError.toException());
+                listener.onCancelled(databaseError);
+            }
+        });
+    }
 }

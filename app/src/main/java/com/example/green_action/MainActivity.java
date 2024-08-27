@@ -83,18 +83,29 @@ public class MainActivity extends AppCompatActivity {
     // BottomNavigationView의 아이템 선택 처리
     private boolean handleBottomNavigationItemSelected(int itemId) {
         Fragment fragment = null;
+
         if (itemId == R.id.nav_home) {
             fragment = new HomeFragment();
         } else if (itemId == R.id.nav_quiz) {
-            fragment = new DailyQuizFragment();
+            fragment = createDailyQuizFragmentWithId(1); // 여기서 quizId를 전달
         } else if (itemId == R.id.nav_leaderboard) {
             fragment = new LeaderboardFragment();
         }
+
         if (fragment != null) {
             loadFragment(fragment);
             return true;
         }
         return false;
+    }
+
+    // DailyQuizFragment에 quizId를 전달하는 메서드 추가
+    private DailyQuizFragment createDailyQuizFragmentWithId(int quizId) {
+        DailyQuizFragment fragment = new DailyQuizFragment();
+        Bundle args = new Bundle();
+        args.putInt("QUIZ_NUMBER", quizId);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     // 프래그먼트를 로드하는 메서드
