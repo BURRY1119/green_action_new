@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         View headerView = navigationView.getHeaderView(0);
         ImageView profileImageView = headerView.findViewById(R.id.imageView);
         TextView profileIdTextView = headerView.findViewById(R.id.textView);
+        TextView profileRankTextView = headerView.findViewById(R.id.textViewRank);
         TextView profileInfoTextView = headerView.findViewById(R.id.textView2);
 
         // Firebase에서 사용자 ID를 가져오기 (예: FirebaseAuth에서)
@@ -112,9 +113,10 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("MainActivity", "DataSnapshot: " + dataSnapshot.toString());
                     String id = dataSnapshot.child("id").getValue(String.class);
                     Long score = dataSnapshot.child("score").getValue(Long.class);
+                    Long rank = dataSnapshot.child("rank").getValue(Long.class);
                     String profileImage = dataSnapshot.child("profileImage").getValue(String.class);
 
-                    if (id == null || score == null || profileImage == null) {
+                    if (id == null || score == null || rank == null || profileImage == null) {
                         Log.e("MainActivity", "Missing fields in dataSnapshot");
                         Toast.makeText(MainActivity.this, "사용자 정보가 누락되었습니다.", Toast.LENGTH_SHORT).show();
                         return;
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // 사용자 정보 UI에 설정
                     profileIdTextView.setText(id);
+                    profileRankTextView.setText("순위: " + rank);
                     profileInfoTextView.setText("점수: " + score);
 
                     // 프로필 이미지 로드

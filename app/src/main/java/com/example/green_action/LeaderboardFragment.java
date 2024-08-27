@@ -67,11 +67,11 @@ public class LeaderboardFragment extends Fragment {
                     Long score = userSnapshot.child("score").getValue(Long.class);
                     String profileImage = userSnapshot.child("profileImage").getValue(String.class);
                     if (userId != null && score != null) {
-                        userList.add(new User(userId, score, profileImage));
+                        userList.add(new User(userSnapshot.getKey(), userId, score, profileImage));
                     }
                 }
 
-                // Sort the list by score in descending order
+                // 사용자들의 score를 기준으로 내림차순 정렬
                 Collections.sort(userList, new Comparator<User>() {
                     @Override
                     public int compare(User u1, User u2) {
@@ -79,13 +79,29 @@ public class LeaderboardFragment extends Fragment {
                     }
                 });
 
-                // Display the top 30 users
+                // 순위 계산 및 Firebase에 업데이트
+                int rank = 1;
+                Long previousScore = -1L;
+                for (int i = 0; i < userList.size(); i++) {
+                    User user = userList.get(i);
+
+                    // 점수가 이전 사용자와 다를 경우에만 순위를 갱신
+                    if (!user.getScore().equals(previousScore)) {
+                        rank = i + 1;
+                    }
+                    previousScore = user.getScore();
+
+                    // 순위를 Firebase에 저장
+                    usersRef.child(user.getUid()).child("rank").setValue(rank);
+                }
+
+                // 상위 30명의 사용자 데이터를 UI에 표시
                 displayTopUsers(userList);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle possible errors.
+                // 에러 처리
             }
         });
     }
@@ -94,23 +110,23 @@ public class LeaderboardFragment extends Fragment {
         leaderboardLayout.removeAllViews();  // 기존의 리더보드 데이터를 지우고 새 데이터를 추가합니다.
 
         int maxUsers = Math.min(30, userList.size());
-        Long previousScore = -1L;  // previousScore를 Long 타입으로 변경
+        Long previousScore = -1L;
         int rank = 1;
 
         for (int i = 0; i < maxUsers; i++) {
             User user = userList.get(i);
 
-            // If score is different from the previous, update the rank
-            if (!user.getScore().equals(previousScore)) {  // Long 타입이므로 equals()로 비교
+            // 점수가 이전 사용자와 다를 경우에만 순위를 갱신
+            if (!user.getScore().equals(previousScore)) {
                 rank = i + 1;
             }
             previousScore = user.getScore();
 
-            // Create a horizontal LinearLayout for each leaderboard entry
+            // 리더보드 항목을 위한 레이아웃 생성
             LinearLayout entryLayout = new LinearLayout(getContext());
             entryLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-            // Rank TextView
+            // 순위 TextView
             TextView rankTextView = new TextView(getContext());
             rankTextView.setText(String.valueOf(rank));
             rankTextView.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.5f));
@@ -118,17 +134,17 @@ public class LeaderboardFragment extends Fragment {
             rankTextView.setTypeface(null, android.graphics.Typeface.BOLD);
             rankTextView.setTextColor(getResources().getColor(R.color.black));
 
-            // Profile ImageView
+            // 프로필 이미지 ImageView
             ImageView profileImageView = new ImageView(getContext());
             profileImageView.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.5f));
             Glide.with(this)
                     .load(user.getProfileImage())
-                    .override(100, 100)  // 이미지 크기를 100x100 픽셀로 조정
-                    .circleCrop()  // 이미지를 원형으로 표시합니다.
-                    .error(R.drawable.ic_profile_placeholder) // 프로필 이미지가 없는 경우 기본 이미지 설정
+                    .override(100, 100)
+                    .circleCrop()
+                    .error(R.drawable.ic_profile_placeholder)
                     .into(profileImageView);
 
-            // User ID TextView (limit to 12 characters)
+            // User ID TextView (12자 제한)
             String userId = user.getId().length() > 12 ? user.getId().substring(0, 12) : user.getId();
             TextView userIdTextView = new TextView(getContext());
             userIdTextView.setText(userId);
@@ -136,16 +152,16 @@ public class LeaderboardFragment extends Fragment {
             userIdTextView.setTextSize(16);
             userIdTextView.setTextColor(getResources().getColor(R.color.black));
 
-            // Score TextView
+            // 점수 TextView
             TextView scoreTextView = new TextView(getContext());
             scoreTextView.setText(String.valueOf(user.getScore()));
             scoreTextView.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
             scoreTextView.setTextSize(24);
-            scoreTextView.setTypeface(null, android.graphics.Typeface.BOLD); // 글씨 스타일을 볼드체로 설정
+            scoreTextView.setTypeface(null, android.graphics.Typeface.BOLD);
             scoreTextView.setTextColor(getResources().getColor(R.color.black));
-            scoreTextView.setGravity(View.TEXT_ALIGNMENT_VIEW_END);  // 점수를 오른쪽 정렬
+            scoreTextView.setGravity(View.TEXT_ALIGNMENT_VIEW_END);
 
-            // Apply background color based on rank
+            // 순위에 따른 배경색 설정
             if (rank == 1) {
                 entryLayout.setBackgroundColor(getResources().getColor(R.color.gold));
             } else if (rank == 2) {
@@ -158,13 +174,13 @@ public class LeaderboardFragment extends Fragment {
                 entryLayout.setBackgroundColor(getResources().getColor(R.color.airPollution));
             }
 
-            // Add TextViews and ImageView to the entry layout
+            // TextViews 및 ImageView를 레이아웃에 추가
             entryLayout.addView(rankTextView);
-            entryLayout.addView(profileImageView);  // 프로필 이미지 추가
+            entryLayout.addView(profileImageView);
             entryLayout.addView(userIdTextView);
             entryLayout.addView(scoreTextView);
 
-            // Add padding and margins for better UI
+            // 패딩 및 마진 설정
             entryLayout.setPadding(32, 32, 32, 32);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -173,20 +189,26 @@ public class LeaderboardFragment extends Fragment {
             layoutParams.setMargins(0, 8, 0, 8);
             entryLayout.setLayoutParams(layoutParams);
 
-            // Add the entry layout to the leaderboard layout
+            // 리더보드 레이아웃에 항목 추가
             leaderboardLayout.addView(entryLayout);
         }
     }
 
     private static class User {
+        private String uid;
         private String id;
         private Long score;
         private String profileImage;
 
-        public User(String id, Long score, String profileImage) {
+        public User(String uid, String id, Long score, String profileImage) {
+            this.uid = uid;
             this.id = id;
             this.score = score;
             this.profileImage = profileImage;
+        }
+
+        public String getUid() {
+            return uid;
         }
 
         public String getId() {
