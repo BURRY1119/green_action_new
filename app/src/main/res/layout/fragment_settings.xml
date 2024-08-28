@@ -2,20 +2,21 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:fillViewport="true"> <!-- 이 속성을 추가합니다 -->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"> <!-- 이 속성을 추가합니다 -->
 
         <!-- 프로필 이미지 -->
         <ImageView
             android:id="@+id/user_profile_image"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="32dp"
             android:src="@drawable/ic_profile_placeholder"
             android:scaleType="centerCrop" />
 
@@ -25,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="아이디"
+            android:text="ID"
             android:textSize="18sp"
             android:textColor="@android:color/black" />
 
@@ -35,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="이메일"
+            android:text="Email"
             android:textSize="18sp"
             android:textColor="@android:color/black" />
 
@@ -45,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="이름"
+            android:text="Name"
             android:textSize="18sp"
             android:textColor="@android:color/black"/>
 
@@ -55,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="연락처"
+            android:text="Contact"
             android:textSize="18sp"
             android:textColor="@android:color/black"/>
 

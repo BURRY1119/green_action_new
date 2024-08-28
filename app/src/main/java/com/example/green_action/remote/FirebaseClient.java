@@ -360,4 +360,14 @@ public class FirebaseClient {
             Log.e(TAG, "User ID is null or empty");
         }
     }
+
+    public void saveQuizCompletionStatus(String userId, int quizId, boolean status) {
+        DatabaseReference quizStatusRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("quizStatus").child(String.valueOf(quizId));
+        quizStatusRef.setValue(status);
+    }
+
+    public void loadQuizCompletionStatus(String userId, int quizId, ValueEventListener listener) {
+        DatabaseReference quizStatusRef = FirebaseDatabase.getInstance().getReference("users").child(userId).child("quizStatus").child(String.valueOf(quizId));
+        quizStatusRef.addListenerForSingleValueEvent(listener);
+    }
 }

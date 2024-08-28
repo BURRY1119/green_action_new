@@ -42,7 +42,7 @@ public class DailyQuizFragment extends Fragment {
     private QuizViewModel quizViewModel;
 
     private long lastQuizTime;
-    public static final long QUIZ_INTERVAL = 30 * 1000; // 30초
+    public static final long QUIZ_INTERVAL = 24 * 60 * 60 * 1000; // 24시간
 
     public DailyQuizFragment() {
         // Required empty public constructor
@@ -85,7 +85,7 @@ public class DailyQuizFragment extends Fragment {
             return;
         }
 
-        checkQuizAvailability();
+        checkQuizCompletionStatus();  // 수정된 부분
 
         actionButton.setOnClickListener(v -> handleButtonClick());
 
@@ -102,28 +102,26 @@ public class DailyQuizFragment extends Fragment {
         });
     }
 
-    private void checkQuizAvailability() {
-        firebaseClient.loadLastQuizId(userId, new ValueEventListener() {
+    private void checkQuizCompletionStatus() {
+        firebaseClient.loadQuizCompletionStatus(userId, quizId, new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.exists()) {
-                    Integer lastQuizId = snapshot.getValue(Integer.class);
-                    if (lastQuizId != null) {
-                        quizId = lastQuizId;
-                    } else {
-                        quizId = 1;
-                    }
+                Boolean hasCompleted = snapshot.exists() ? snapshot.getValue(Boolean.class) : null;
+                if (hasCompleted != null && hasCompleted) {
+                    // 이미 푼 퀴즈라면
+                    quizTextView.setText("해당 퀴즈는 이미 풀었습니다. 다음 퀴즈를 기다려주세요.");
+                    actionButton.setEnabled(false);
+                    answerEditText.setEnabled(false);
+                    explanationTextView.setVisibility(View.GONE); // 해설도 감추기
                 } else {
-                    Log.e(TAG, "No last quiz ID found, defaulting to quizId 1.");
-                    quizId = 1;
+                    // 퀴즈를 푼 적이 없으면 로드
+                    checkQuizAvailabilityByTime();
                 }
-                Log.d(TAG, "Current quizId: " + quizId);
-                checkQuizAvailabilityByTime();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "Failed to load last quiz id", error.toException());
+                Log.e(TAG, "Failed to load quiz completion status", error.toException());
             }
         });
     }
@@ -154,7 +152,11 @@ public class DailyQuizFragment extends Fragment {
     }
 
     private void disableQuiz(long remainingTime) {
-        quizTextView.setText("해당 문제는 이미 풀었습니다. " + (remainingTime / 1000) + "초 후에 새로운 문제를 풀 수 있습니다.");
+        long hours = (remainingTime / (1000 * 60 * 60)) % 24;
+        long minutes = (remainingTime / (1000 * 60)) % 60;
+        long seconds = (remainingTime / 1000) % 60;
+
+        quizTextView.setText("다음 퀴즈까지 남은 시간: " + hours + "시간 " + minutes + "분 " + seconds + "초");
         actionButton.setEnabled(false);
         answerEditText.setEnabled(false);
     }
@@ -213,6 +215,7 @@ public class DailyQuizFragment extends Fragment {
                             displayExplanation(quizDetail);
                         }
                         saveQuizProgress();
+                        saveQuizCompletionStatus();  // 사용자가 퀴즈를 푼 후에 퀴즈 풀이 상태를 저장
                     } else {
                         Log.e(TAG, "QuizDetail is null for quizId: " + quizId);
                         Toast.makeText(getContext(), "퀴즈 데이터를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
@@ -255,6 +258,13 @@ public class DailyQuizFragment extends Fragment {
                 quizId = 1;
             }
             firebaseClient.saveLastQuizId(userId, quizId); // 다음 퀴즈 ID를 저장
+        }
+    }
+
+    // 추가: 퀴즈 풀이 여부를 저장하는 메서드
+    private void saveQuizCompletionStatus() {
+        if (userId != null) {
+            firebaseClient.saveQuizCompletionStatus(userId, quizId, true); // true 값을 저장하여 사용자가 퀴즈를 풀었음을 표시
         }
     }
 }

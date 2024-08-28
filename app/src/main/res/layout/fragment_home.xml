@@ -29,7 +29,8 @@
             android:padding="16dp"
             android:text="대기 오염"
             android:textColor="@android:color/black"
-            android:textSize="18sp"
+            android:fontFamily="@font/nanumeb"
+            android:textSize="20sp"
             app:cornerRadius="48dp"/>
 
         <!-- 수질 오염 버튼 -->
@@ -47,7 +48,8 @@
             android:padding="16dp"
             android:text="수질 오염"
             android:textColor="@android:color/black"
-            android:textSize="18sp"
+            android:fontFamily="@font/nanumeb"
+            android:textSize="20sp"
             app:cornerRadius="48dp"/>
 
         <!-- 토양 오염 버튼 -->
@@ -65,7 +67,8 @@
             android:padding="16dp"
             android:text="토양 오염"
             android:textColor="@android:color/black"
-            android:textSize="18sp"
+            android:fontFamily="@font/nanumeb"
+            android:textSize="20sp"
             app:cornerRadius="48dp"/>
 
         <!-- 플라스틱 오염 버튼 -->
@@ -83,7 +86,8 @@
             android:padding="16dp"
             android:text="플라스틱 오염"
             android:textColor="@android:color/black"
-            android:textSize="18sp"
+            android:fontFamily="@font/nanumeb"
+            android:textSize="20sp"
             app:cornerRadius="48dp"/>
     </GridLayout>
 
@@ -107,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="커뮤니티"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -134,7 +138,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="오늘의 이슈"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tv_issue_latest_post_title"
@@ -160,7 +165,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="자유 게시판"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tv_free_latest_post_title"
@@ -186,7 +192,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="공지사항"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tv_notice_latest_post_title"
@@ -212,7 +219,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Q &amp; A 게시판"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tv_qna_latest_post_title"

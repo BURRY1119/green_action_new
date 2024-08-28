@@ -42,9 +42,9 @@
                 android:id="@+id/quizTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="40dp"
                 android:text=""
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textColor="#000000" />
 
             <!-- 해설 TextView (정답과 해설을 표시) -->
@@ -52,7 +52,7 @@
                 android:id="@+id/explanationTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="30dp"
                 android:text=""
                 android:textSize="16sp"
                 android:textColor="#000000"
@@ -70,6 +70,7 @@
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:hint="정답을 입력하세요"
         app:layout_constraintBottom_toTopOf="@id/submitButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -81,7 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="제출"
-        android:layout_marginBottom="35dp"
+        android:layout_marginBottom="50dp"
         android:backgroundTint="@color/actionGreen"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
