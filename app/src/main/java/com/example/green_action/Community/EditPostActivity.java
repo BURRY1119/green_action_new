@@ -2,6 +2,7 @@ package com.example.green_action.Community;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -37,6 +38,16 @@ public class EditPostActivity extends AppCompatActivity {
         boardType = intent.getStringExtra("boardType"); // 게시판 유형을 받음
         String title = intent.getStringExtra("title");
         String content = intent.getStringExtra("content");
+
+        // boardType 검사 추가
+        if (boardType == null || boardType.isEmpty()) {
+            Toast.makeText(this, "게시판 유형을 확인할 수 없습니다.", Toast.LENGTH_SHORT).show();
+            Log.e("EditPostActivity", "boardType is null or empty");
+            finish();
+            return;
+        } else {
+            Log.d("EditPostActivity", "Received boardType: " + boardType);
+        }
 
         editTitle.setText(title);
         editContent.setText(content);

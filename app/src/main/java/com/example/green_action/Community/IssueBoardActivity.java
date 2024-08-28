@@ -55,7 +55,7 @@ public class IssueBoardActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.community_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new CommunityPostAdapter(postItemList, this, loggedInUserId);
+        adapter = new CommunityPostAdapter(postItemList, this, loggedInUserId, "issue");
         recyclerView.setAdapter(adapter);
 
         Button writePostButton = findViewById(R.id.write_post_button);
