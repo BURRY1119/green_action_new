@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/nanumeb"
-                android:text="qna 게시판"
+                android:text="Q &amp; A 게시판"
                 android:textColor="@color/black"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -60,7 +60,7 @@
 
         <Button
             android:background="@drawable/button_shape"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:id="@+id/write_post_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

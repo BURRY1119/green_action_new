@@ -60,7 +60,7 @@
 
         <Button
             android:background="@drawable/button_shape"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:id="@+id/write_post_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

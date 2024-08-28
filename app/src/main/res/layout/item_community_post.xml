@@ -19,13 +19,13 @@
         android:fontFamily="@font/nanumeb"
         android:text="Post Title"
         android:textColor="@color/black"
-        android:textSize="23sp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="9dp">
+        android:layout_marginTop="10dp">
 
         <!-- Post Content -->
         <TextView
@@ -37,7 +37,7 @@
             android:textColor="@color/black"
             android:fontFamily="@font/nanumeb"
             android:text="Post content goes here"
-            android:textSize="13sp" />
+            android:textSize="14sp" />
 
         <!-- Username and UID (first 7 characters) displayed on the right -->
         <TextView
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:text="Username (UserID)"
             android:fontFamily="@font/nanumeb"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:textColor="#808080"/>
@@ -55,7 +55,7 @@
     <RelativeLayout
         android:layout_width="334dp"
         android:layout_height="25dp"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="10dp">
 
         <!-- Timestamp displayed on the left -->
         <TextView
@@ -67,7 +67,7 @@
             android:fontFamily="@font/nanumeb"
             android:text="Timestamp"
             android:textColor="#808080"
-            android:textSize="11sp" />
+            android:textSize="12sp" />
 
         <!-- Like count and heart icon displayed on the right -->
         <LinearLayout

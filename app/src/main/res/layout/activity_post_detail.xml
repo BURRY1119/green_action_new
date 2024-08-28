@@ -34,7 +34,7 @@
 </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:paddingTop="10dp"
+        android:paddingTop="20dp"
         android:id="@+id/detail_post_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,13 +52,13 @@
         android:fontFamily="@font/nanumeb"
         android:text="Post Content"
         android:textSize="20sp"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="10dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/nanumeb"
-        android:layout_marginTop="4dp">
+        android:layout_marginTop="5dp">
 
         <!-- 타임스탬프 -->
         <TextView
@@ -88,7 +88,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/nanumeb">
 
         <Button
@@ -104,7 +104,7 @@
             android:id="@+id/like_count_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="10dp"
             android:text="0" />
 
     </LinearLayout>
@@ -112,7 +112,7 @@
     <TextView
         android:id="@+id/like_status_text_view"
         android:layout_width="match_parent"
-        android:layout_height="21dp"
+        android:layout_height="20dp"
         android:text="  LIKE" />
 
     <View
